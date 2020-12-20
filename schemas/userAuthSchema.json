@@ -1,0 +1,25 @@
+{
+  "$id": "http://example.com/example.json",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "email": {
+      "$id": "/properties/email",
+      "type": "string",
+      "format": "email",
+      "title": "The Email Schema ",
+      "default": "",
+      "examples": ["abc@bcd.com"]
+    },
+    "password": {
+      "$id": "/properties/password",
+      "type": "string",
+      "title": "The Password Schema ",
+      "default": "",
+      "minLength": 5,
+      "maxLength": 55,
+      "examples": ["foo123"]
+    }
+  },
+  "required": ["email", "password"]
+}
