@@ -67,6 +67,15 @@
       "maxLength": 25,
       "examples": ["Apt. 5E"]
     },
+    "city": {
+      "$id": "/properties/city",
+      "type": "string",
+      "title": "The City Schema ",
+      "default": "",
+      "minLength": 2,
+      "maxLength": 30,
+      "examples": ["New York City"]
+    },
     "state": {
       "$id": "/properties/state",
       "type": "string",

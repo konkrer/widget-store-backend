@@ -12,6 +12,7 @@
             "description": "Classic cookbook.",
             "image_url": "http://image.com/image.jpg",
             "price": 25.0,
+            "discount": 0.1,
             "quantity": 30,
             "distributor": 1,
             "sku": "S08JF08SJ0-2"
@@ -73,6 +74,16 @@
             "default": 0.0,
             "examples": [
                 25.0
+            ]
+        },
+        "discount": {
+            "$id": "#/properties/discount",
+            "type": "number",
+            "title": "The discount schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": 0.0,
+            "examples": [
+                0.1
             ]
         },
         "quantity": {
