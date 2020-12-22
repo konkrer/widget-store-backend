@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "jest -i",
+    "test:ci": "jest  __tests__/unit -i",
     "start:dev": "nodemon server.js",
     "start:debug": "nodemon --inspect-brk server.js",
     "start": "node server.js"
