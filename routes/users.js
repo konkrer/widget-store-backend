@@ -39,6 +39,7 @@ router.get('/:username', ensureCorrectUser, async function (req, res, next) {
 
 router.post('/', async function (req, res, next) {
   try {
+    debugger;
     const validation = validate(req.body, userNewSchema);
 
     if (!validation.valid) {
@@ -50,7 +51,7 @@ router.post('/', async function (req, res, next) {
 
     const newUser = await User.register(req.body);
     const token = createToken(newUser);
-    return res.status(201).json({ token });
+    return res.status(201).json({ token, user: newUser });
   } catch (e) {
     return next(e);
   }

@@ -1,6 +1,6 @@
 const db = require('../db');
+const braintreeGateway = require('../braintreeGateway');
 const sqlForPartialUpdate = require('../helpers/partialUpdate');
-const Product = require('./product');
 
 /** Related methods for orders. */
 
@@ -9,7 +9,8 @@ class Order {
 
   static async findAll() {
     const ordersRes = await db.query(
-      'SELECT order_id, status, order_date FROM orders ORDER BY order_date DESC'
+      `SELECT order_id, status, order_date
+      FROM orders ORDER BY order_date DESC LIMIT 50`
     );
     return ordersRes.rows;
   }
@@ -41,58 +42,100 @@ class Order {
   /**
    * Create a new order row from data obj input.
    * Create a new orders_product row for each distinct item in cart (with quantity).
-   *
-   * Input note: data.items is array -> [[product_id, quantity], [product_id, quantity]]
-   *
-   * returns order obj with order.items array -> [{order_id, product_id, quantity}].
    */
 
   static async create(data) {
-    // confirm sufficient quantity of items in stock.
-    const inStock = await Product.decrementOrderProducts(data.items);
-    if (!inStock) {
-      const quantErr = new Error(
-        'Insufficient quantity of product to place order.'
+    // destructure data
+    const {
+      cart: { items, subtotal, numCartItems },
+      orderData: {
+        customer,
+        shipping,
+        tax,
+        total,
+        shippingAddress = null,
+        discount = null,
+      },
+      nonce,
+    } = data;
+    // var to note if a product would have an in-stock quantity < 0
+    let errorProduct;
+
+    try {
+      // perform transaction
+      await db.query('BEGIN');
+      debugger;
+      // decrement in-stock quantities for purchased products
+      for (let { product_id, quantity, name } of Object.values(items)) {
+        // note product being alterd in case error is thrown
+        errorProduct = name;
+        await db.query(
+          `UPDATE products
+          SET quantity = quantity - $1
+          WHERE product_id = $2`,
+          [quantity, product_id]
+        );
+      }
+      errorProduct = null;
+
+      // make brain tree transaction
+      let transaction = await braintreeGateway.transaction.sale({
+        amount: total,
+        paymentMethodNonce: nonce,
+        options: {
+          submitForSettlement: true,
+        },
+      });
+      if (!transaction.success) throw new Error('Braintree success error');
+
+      // create order record in orders table
+      const result = await db.query(
+        `INSERT INTO orders (customer, customer_info, total_items_quantity,
+        subtotal, discount, tax, shipping_cost, total, shipping_method,
+        shipping_address, processor_transaction) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) 
+             RETURNING order_id`,
+        [
+          customer.user_id || null,
+          customer,
+          numCartItems,
+          subtotal,
+          discount,
+          tax,
+          shipping.details.cost,
+          total,
+          shipping,
+          shippingAddress,
+          transaction.transaction,
+        ]
       );
-      quantErr.status = 409;
-      throw quantErr;
+      const order = result.rows[0];
+
+      // add orders_products rows for orderd items
+      for (let { product_id, quantity } of Object.values(items)) {
+        await db.query(`INSERT INTO orders_products VALUES ($1, $2, $3)`, [
+          order.order_id,
+          product_id,
+          quantity,
+        ]);
+      }
+
+      await db.query('COMMIT');
+      return order;
+    } catch (error) {
+      // rollback and throw error
+      await db.query('ROLLBACK');
+
+      // if there was an error adjusting product quantity (errorProduct)
+      // show an insufficient quantity message
+      const msg = errorProduct
+        ? `Insufficient Quantity: "${errorProduct}"`
+        : error.message;
+
+      error.message = msg;
+      error.status = 409;
+      throw error;
     }
-
-    const result = await db.query(
-      `INSERT INTO orders (customer, distinct_cart_items, total_items_quantity,
-        subtotal, tax, shipping_cost, total, shipping_method, tracking_number,
-        shipping_address) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) 
-             RETURNING order_id, customer, distinct_cart_items, total_items_quantity,
-                subtotal, tax, shipping_cost, total, shipping_method, tracking_number,
-                shipping_address`,
-      [
-        data.customer,
-        data.distinct_cart_items,
-        data.total_items_quantity,
-        data.subtotal,
-        data.tax,
-        data.shipping_cost,
-        data.total,
-        data.shipping_method,
-        data.tracking_number,
-        data.shipping_address,
-      ]
-    );
-    const order = result.rows[0];
-
-    // add needed orders_products rows for data.items (orderd products)
-    // and make order.items array to return
-    order.items = await data.items.reduce(async (acc, [p_id, quantity]) => {
-      const res = await db.query(
-        `INSERT INTO orders_products VALUES ($1, $2, $3) RETURNING *`,
-        [order.order_id, p_id, quantity]
-      );
-      acc.push(res.rows[0]);
-      return acc;
-    }, []);
-
-    return order;
   }
 
   /** Update order data with `data`.

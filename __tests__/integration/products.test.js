@@ -10,8 +10,8 @@ const client = request(app);
 const {
   TEST_DATA,
   beforeAllHook,
-  beforeEachHook,
-  afterEachHook,
+  addTestDataHook,
+  clearDBTablesHook,
   afterAllHook,
 } = require('../../helpers/testsConfig');
 
@@ -20,11 +20,11 @@ beforeAll(async function () {
 });
 
 beforeEach(async function () {
-  await beforeEachHook(TEST_DATA);
+  await addTestDataHook(TEST_DATA);
 });
 
 afterEach(async function () {
-  await afterEachHook();
+  await clearDBTablesHook();
 });
 
 afterAll(async function () {
@@ -76,6 +76,7 @@ describe('GET /products', function () {
       name: 'Applesauce',
       description: 'food',
       price: 5.0,
+      net_weight: 1.2,
     });
     // Applesauce should be first
     const alphaResp = await client.get(
@@ -114,6 +115,7 @@ describe('POST /products', function () {
       description: 'Rain unbrella.',
       price: 123.09,
       _token: TEST_DATA.testUserToken,
+      net_weight: 1.2,
     });
     expect(response.statusCode).toBe(201);
     expect(response.body.product).toHaveProperty('name');
@@ -128,6 +130,7 @@ describe('POST /products', function () {
       description: 'Rain unbrella.',
       price: 123.09,
       _token: TEST_DATA.testUserToken,
+      net_weight: 1.2,
     });
     expect(response.statusCode).toBe(409);
   });

@@ -1,14 +1,14 @@
-/** Express app for jobly. */
+/** Express app for widget-store. */
 
 const express = require('express');
 const app = express();
 const cors = require('cors');
+const helmet = require('helmet');
+const morgan = require('morgan');
+
 app.use(express.json());
 app.use(cors());
-
-// add logging system
-
-const morgan = require('morgan');
+app.use(helmet());
 app.use(morgan('tiny'));
 
 const usersRoutes = require('./routes/users');

@@ -40,7 +40,7 @@
         "phone_number": {
             "$id": "#/properties/phone_number",
             "type": "string",
-            "pattern": "^(?:\\+?(\\d{1,3})[- .]?)?([(]?(\\d{3})[-. )]?)?(\\d{3})[-. ]?(\\d{4})$",
+            "pattern": "^(?:\\+?(\\d{1,3})[- .]?)?[(]?(\\d{3})(?:(?:\\) )?|[-. )]?)(\\d{3})[-. ]?(\\d{4})$",
             "title": "The phone_number schema",
             "description": "An explanation about the purpose of this instance.",
             "default": "",

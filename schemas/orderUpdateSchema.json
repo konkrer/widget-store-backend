@@ -11,18 +11,11 @@
             "_token": "token"
         }
     ],
-    "required": ["_token", "status"],
+    "required": [
+        "status",
+        "_token"
+    ],
     "properties": {
-        "_token": {
-            "$id": "#/properties/_token",
-            "type": "string",
-            "title": "The _token schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": "",
-            "examples": [
-                ";aljfaljfaj"
-            ]
-        },
         "status": {
             "$id": "#/properties/status",
             "type": "string",
@@ -32,7 +25,17 @@
             "examples": [
                 "Pending"
             ]
+        },
+        "_token": {
+            "$id": "#/properties/_token",
+            "type": "string",
+            "title": "The _token schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "token"
+            ]
         }
     },
-    "additionalProperties": false
+    "additionalProperties": true
 }

@@ -10,8 +10,8 @@ const client = request(app);
 const {
   TEST_DATA,
   beforeAllHook,
-  beforeEachHook,
-  afterEachHook,
+  addTestDataHook,
+  clearDBTablesHook,
   afterAllHook,
 } = require('../../helpers/testsConfig');
 
@@ -20,11 +20,11 @@ beforeAll(async function () {
 });
 
 beforeEach(async function () {
-  await beforeEachHook(TEST_DATA);
+  await addTestDataHook(TEST_DATA);
 });
 
 afterEach(async function () {
-  await afterEachHook();
+  await clearDBTablesHook();
 });
 
 afterAll(async function () {

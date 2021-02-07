@@ -14,9 +14,10 @@ const client = request(app);
 const {
   TEST_DATA,
   beforeAllHook,
-  beforeEachHook,
-  afterEachHook,
+  addTestDataHook,
+  clearDBTablesHook,
   afterAllHook,
+  addUser2Hook,
 } = require('../../helpers/testsConfig');
 
 beforeAll(async function () {
@@ -24,11 +25,11 @@ beforeAll(async function () {
 });
 
 beforeEach(async function () {
-  await beforeEachHook(TEST_DATA);
+  await addTestDataHook(TEST_DATA);
 });
 
 afterEach(async function () {
-  await afterEachHook();
+  await clearDBTablesHook();
 });
 
 afterAll(async function () {
@@ -40,7 +41,7 @@ describe('POST /users', function () {
     let dataObj = {
       username: 'GillyWoo',
       email: 'gilly@gmail.com',
-      password: 'foo123',
+      password: 'foo123FOOFOO',
       first_name: 'Gilly',
       last_name: 'Woofles',
     };
@@ -48,7 +49,7 @@ describe('POST /users', function () {
     expect(response.statusCode).toBe(201);
     expect(response.body).toHaveProperty('token');
     const gillyInDb = await User.findOne('GillyWoo');
-    ['username', 'first_name', 'last_name'].forEach(key => {
+    ['username', 'first_name', 'last_name', 'email'].forEach(key => {
       expect(dataObj[key]).toEqual(gillyInDb[key]);
     });
   });
@@ -57,7 +58,7 @@ describe('POST /users', function () {
     const response = await client.post('/users').send({
       username: 'testuser',
       first_name: 'Testy',
-      password: 'foo123',
+      password: 'foo123FOO',
       last_name: 'McTest',
       email: 'abc@cde.com',
     });
@@ -66,19 +67,19 @@ describe('POST /users', function () {
 
   test('Prevents creating a user with duplicate email', async function () {
     const response = await client.post('/users').send({
-      username: 'testuser2',
+      username: 'newname',
       first_name: 'Testy',
-      password: 'foo123',
+      password: 'foo123FOO',
       last_name: 'McTest',
-      email: 'abc@cde.com',
+      email: 'testuser@gmail.com',
     });
     expect(response.statusCode).toBe(409);
   });
 
   test('Prevents creating a user without required password field', async function () {
     const response = await client.post('/users').send({
-      username: 'test',
-      first_name: 'Test',
+      username: 'newname',
+      first_name: 'Testy',
       last_name: 'McTester',
       email: 'test@rithmschool.com',
     });
@@ -94,16 +95,13 @@ describe('GET /users', function () {
     expect(response.body.users).toHaveLength(1);
     expect(response.body.users[0]).toHaveProperty('username');
     expect(response.body.users[0]).not.toHaveProperty('password');
-  });
 
-  test('User not present after delete', async function () {
-    await client
-      .delete(`/users/${TEST_DATA.testUser.username}`)
-      .send({ _token: TEST_DATA.testUserToken });
-    const response = await client
+    await addUser2Hook(TEST_DATA);
+
+    const response2 = await client
       .get('/users')
       .send({ _token: `${TEST_DATA.testUserToken}` });
-    expect(response.body.users).toHaveLength(0);
+    expect(response2.body.users).toHaveLength(2);
   });
 });
 
@@ -145,20 +143,20 @@ describe('PATCH /users/:username', function () {
     const response = await client
       .patch(`/users/${TEST_DATA.testUser.username}`)
       .send({
-        first_name: 'xkcd',
+        first_name: 'Homer',
         _token: `${TEST_DATA.testUserToken}`,
       });
     const user = response.body.user;
     expect(user).toHaveProperty('username');
     expect(user).not.toHaveProperty('password');
-    expect(user.first_name).toBe('xkcd');
+    expect(user.first_name).toBe('Homer');
     expect(user.username).toBe('testuser');
   });
 
   test("Updates a single a user's password", async function () {
     const response = await client
       .patch(`/users/${TEST_DATA.testUser.username}`)
-      .send({ _token: `${TEST_DATA.testUserToken}`, password: 'foo12345' });
+      .send({ _token: `${TEST_DATA.testUserToken}`, password: 'foo123FOO45' });
 
     const user = response.body.user;
     expect(user).toHaveProperty('username');
@@ -172,17 +170,10 @@ describe('PATCH /users/:username', function () {
     expect(response.statusCode).toBe(400);
   });
 
-  test('Forbids a user from editing another user', async function () {
-    const response = await client
-      .patch(`/users/notme`)
-      .send({ password: 'foo12345', _token: `${TEST_DATA.testUserToken}` });
-    expect(response.statusCode).toBe(401);
-  });
-
   test('Responds with a 401 if token does not match username', async function () {
     const response = await client
       .patch(`/users/bunny`)
-      .send({ password: 'foo12345', _token: `${TEST_DATA.testUserToken}` });
+      .send({ password: 'foo123FOO45', _token: `${TEST_DATA.testUserToken}` });
     expect(response.statusCode).toBe(401);
   });
 
@@ -193,17 +184,31 @@ describe('PATCH /users/:username', function () {
       .send({ _token: `${TEST_DATA.testUserToken}` });
     const response = await client
       .patch(`/users/${TEST_DATA.testUser.username}`)
-      .send({ password: 'foo12345', _token: `${TEST_DATA.testUserToken}` });
+      .send({ password: 'foo123FOO45', _token: `${TEST_DATA.testUserToken}` });
     expect(response.statusCode).toBe(404);
   });
 
   test('Returns new token if username is changed', async function () {
     const response = await client
       .patch(`/users/${TEST_DATA.testUser.username}`)
-      .send({ username: 'foo12345', _token: `${TEST_DATA.testUserToken}` });
+      .send({ username: 'foo123FOO45', _token: `${TEST_DATA.testUserToken}` });
     expect(response.statusCode).toBe(200);
     expect(response.body).toHaveProperty('token');
-    expect(decode(response.body.token).username).toEqual('foo12345');
+    expect(decode(response.body.token).username).toEqual('foo123FOO45');
+  });
+
+  test('Returns 400 user_id or is_admin in data', async function () {
+    const response = await client
+      .patch(`/users/${TEST_DATA.testUser.username}`)
+      .send({ user_id: 'foo123FOO45', _token: `${TEST_DATA.testUserToken}` });
+    expect(response.statusCode).toBe(400);
+    expect(response.body.message).toBe('Not allowed');
+
+    const response2 = await client
+      .patch(`/users/${TEST_DATA.testUser.username}`)
+      .send({ is_admin: true, _token: `${TEST_DATA.testUserToken}` });
+    expect(response2.statusCode).toBe(400);
+    expect(response2.body.message).toBe('Not allowed');
   });
 });
 

@@ -13,9 +13,7 @@ class User {
     const result = await db.query(
       `SELECT user_id,
               username,
-              email,
-              first_name,
-              last_name,
+              password,
               avatar_url,
               is_admin
       FROM users
@@ -28,6 +26,7 @@ class User {
       // compare hashed password to a new hash from password
       const isValid = await bcrypt.compare(data.password, user.password);
       if (isValid) {
+        delete user['password'];
         return user;
       }
     }
@@ -35,7 +34,9 @@ class User {
     invalidPass.status = 401;
     throw invalidPass;
   }
+
   /** Register user with data. Returns new user data. */
+
   static async register(data) {
     const duplicateNameCheck = await db.query(
       `SELECT username
@@ -45,7 +46,7 @@ class User {
     );
     if (duplicateNameCheck.rows[0]) {
       const err = new Error(
-        `There already exists a user with username '${data.username}`
+        `There already exists a user with username '${data.username}'`
       );
       err.status = 409;
       throw err;
@@ -58,7 +59,7 @@ class User {
     );
     if (duplicateEmailCheck.rows[0]) {
       const err = new Error(
-        `There already exists a user with email '${data.email}`
+        `There already exists a user with email '${data.email}'`
       );
       err.status = 409;
       throw err;
@@ -67,15 +68,11 @@ class User {
     const result = await db.query(
       `INSERT INTO users
             (username, email, password, first_name, last_name, address,
-              apt_number, state, postal_code, phone_number, avatar_url)
+              address_line2, state, postal_code, phone_number, avatar_url)
           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
           RETURNING user_id,
                     username,
-                    email,
-                    first_name,
-                    last_name,
-                    avatar_url,
-                    is_admin`,
+                    avatar_url`,
       [
         data.username,
         data.email,
@@ -83,7 +80,7 @@ class User {
         data.first_name,
         data.last_name,
         data.address,
-        data.apt_number,
+        data.address_line2,
         data.state,
         data.post_code,
         data.phone_number,
@@ -92,7 +89,9 @@ class User {
     );
     return result.rows[0];
   }
+
   /** Find all users. */
+
   static async findAll() {
     const result = await db.query(
       `SELECT username, first_name, last_name, email
@@ -102,11 +101,13 @@ class User {
     );
     return result.rows;
   }
+
   /** Given a username, return data about user. */
+
   static async findOne(username) {
     const userRes = await db.query(
-      `SELECT user_id, username, email, first_name, last_name, address, apt_number,
-                state, postal_code, phone_number, avatar_url
+      `SELECT user_id, username, email, first_name, last_name, address, address_line2,
+                city, state, postal_code, phone_number, avatar_url
             FROM users
             WHERE username = $1
             AND is_active = true`,
@@ -127,6 +128,7 @@ class User {
     user.orders = userOrderRes.rows;
     return user;
   }
+
   /** Update user data with `data`.
    *
    * This is a "partial update" --- it's fine if data doesn't contain
@@ -135,6 +137,7 @@ class User {
    * Return data for changed user.
    *
    */
+
   static async update(username, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
@@ -152,7 +155,9 @@ class User {
     delete user.is_admin;
     return user;
   }
+
   /** Delete given user from database; returns undefined. */
+
   static async remove(username) {
     let result = await db.query(
       `UPDATE users

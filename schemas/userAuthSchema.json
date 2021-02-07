@@ -16,9 +16,10 @@
       "type": "string",
       "title": "The Password Schema ",
       "default": "",
-      "minLength": 5,
+      "minLength": 8,
       "maxLength": 55,
-      "examples": ["foo123"]
+      "pattern":"^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,55}$",
+      "examples": ["foo123K*"]
     }
   },
   "required": ["email", "password"]

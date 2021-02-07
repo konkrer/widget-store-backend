@@ -8,7 +8,7 @@ class Product {
 
   static async findAll(data) {
     let baseQuery = `
-      SELECT product_id, name, description, image_url, price, rating
+      SELECT product_id, name, byline, image_url, price, discount, rating
       FROM products`;
     let whereExpressions = [];
     let queryValues = [];
@@ -38,12 +38,16 @@ class Product {
     }
 
     if (
+      // all sort parameters present and correct
       data.order_by &&
       data.order_by_sort &&
       ['name', 'rating', 'date_added', 'price'].includes(data.order_by) &&
       ['asc', 'desc'].includes(data.order_by_sort)
     )
       orderBy = ` ORDER BY ${data.order_by} ${data.order_by_sort}`;
+    else {
+      orderBy = ' ORDER BY rating desc';
+    }
 
     if (whereExpressions.length > 0) baseQuery += ' WHERE ';
 
@@ -58,7 +62,7 @@ class Product {
 
   static async findOne(product_id) {
     const productRes = await db.query(
-      `SELECT product_id, name, description, image_url, price, date_added, quantity, rating 
+      `SELECT product_id, name, byline, description, image_url, price, discount, date_added, quantity, rating 
        FROM products 
        WHERE product_id = $1`,
       [product_id]
@@ -92,8 +96,8 @@ class Product {
     }
 
     const result = await db.query(
-      `INSERT INTO products (name, description, image_url, price, quantity, distributor, sku) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7) 
+      `INSERT INTO products (name, description, image_url, price, quantity, distributor, sku, net_weight) 
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
              RETURNING product_id, name, description, image_url, price,
                quantity, distributor, sku, date_added`,
       [
@@ -104,6 +108,7 @@ class Product {
         data.quantity,
         data.distributor,
         data.sku,
+        data.net_weight,
       ]
     );
 
@@ -157,47 +162,6 @@ class Product {
       let notFound = new Error(`There exists no product '${product_id}`);
       notFound.status = 404;
       throw notFound;
-    }
-  }
-
-  /** Change quantities of products for a placed order.
-   *
-   * Attempt to decrement product quantity of all ordered items by quantity ordered.
-   * If any item has insuffcient quantity return all product quantities to their
-   * original quantity. Order cannot be created.
-   *
-   * Input array: [[product_id, quantity], [product_id, quantity]]
-   *
-   * Returns boolean inStock -> All products in stock in the quantities needed?
-   */
-
-  static async decrementOrderProducts(itemsArray) {
-    const decremented = [];
-    try {
-      // decrement quantities of products in itemsArray
-      for (let [p_id, quantity] of itemsArray) {
-        const res = await db.query(
-          `UPDATE products 
-          SET quantity = quantity - $1 
-          WHERE product_id = $2
-          RETURNING product_id`,
-          [quantity, p_id]
-        );
-        decremented.push([res.rows[0].product_id, quantity]);
-      }
-
-      return true;
-    } catch (error) {
-      // set quantities of decremented products back to original quantity.
-      decremented.forEach(async ([p_id, quantity]) => {
-        await db.query(
-          `UPDATE products 
-          SET quantity = quantity + $1 
-          WHERE product_id = $2`,
-          [quantity, p_id]
-        );
-      });
-      return false;
     }
   }
 }

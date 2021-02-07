@@ -7,186 +7,303 @@
     "default": {},
     "examples": [
         {
-            "customer": 2,
-            "status": "Pending",
-            "distinct_cart_items": 2,
-            "total_items_quantity": 3,
-            "subtotal": 35.54,
-            "tax": 3.55,
-            "shipping_cost": 12.97,
-            "total": 52.06,
-            "shipping_method": "usps ground",
-            "items": [
-                [
-                    2,
-                    2
-                ]
-            ]
+            "cart": {
+                "items": {},
+                "subtotal": "34.17",
+                "numCartItems": 1
+            },
+            "orderData": {
+                "shipping": {},
+                "tax": "2.90",
+                "total": "49.07",
+                "customer": {
+                    "first_name": "Test",
+                    "last_name": "User",
+                    "email": "foo@gmail.com",
+                    "address": "1234 Main St",
+                    "address_line2": "",
+                    "city": "Big City",
+                    "state": "CA",
+                    "postal_code": "20394-3928",
+                    "phone_number": "(415) 556.5553",
+                    "user_id": 1
+                }
+            },
+            "nonce": "tokencc_bf_xnddbn_wm4wrz_pg86zf_kgybs3_jw6"
         }
     ],
     "required": [
-        "_token",
-        "customer",
-        "distinct_cart_items",
-        "total_items_quantity",
-        "subtotal",
-        "tax",
-        "shipping_cost",
-        "total",
-        "shipping_method",
-        "items"
+        "cart",
+        "orderData",
+        "nonce"
     ],
     "properties": {
-        "_token": {
-            "$id": "#/properties/_token",
-            "type": "string",
-            "title": "The _token schema",
+        "cart": {
+            "$id": "#/properties/cart",
+            "type": "object",
+            "title": "The cart schema",
             "description": "An explanation about the purpose of this instance.",
-            "default": "",
+            "default": {},
             "examples": [
-                ";aljfaljfaj"
-            ]
-        },
-        "customer": {
-            "$id": "#/properties/customer",
-            "type": "integer",
-            "title": "The customer schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0,
-            "examples": [
-                2
-            ]
-        },
-        "status": {
-            "$id": "#/properties/status",
-            "type": "string",
-            "title": "The status schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": "",
-            "examples": [
-                "Pending"
-            ]
-        },
-        "distinct_cart_items": {
-            "$id": "#/properties/distinct_cart_items",
-            "type": "integer",
-            "title": "The distinct_cart_items schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0,
-            "examples": [
-                2
-            ]
-        },
-        "total_items_quantity": {
-            "$id": "#/properties/total_items_quantity",
-            "type": "integer",
-            "title": "The total_items_quantity schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0,
-            "examples": [
-                3
-            ]
-        },
-        "subtotal": {
-            "$id": "#/properties/subtotal",
-            "type": "number",
-            "title": "The subtotal schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0.0,
-            "examples": [
-                35.54
-            ]
-        },
-        "tax": {
-            "$id": "#/properties/tax",
-            "type": "number",
-            "title": "The tax schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0.0,
-            "examples": [
-                3.55
-            ]
-        },
-        "shipping_cost": {
-            "$id": "#/properties/shipping_cost",
-            "type": "number",
-            "title": "The shipping_cost schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0.0,
-            "examples": [
-                12.97
-            ]
-        },
-        "total": {
-            "$id": "#/properties/total",
-            "type": "number",
-            "title": "The total schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": 0.0,
-            "examples": [
-                52.06
-            ]
-        },
-        "shipping_method": {
-            "$id": "#/properties/shipping_method",
-            "type": "string",
-            "title": "The shipping_method schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": "",
-            "examples": [
-                "usps ground"
-            ]
-        },
-        "items": {
-            "$id": "#/properties/items",
-            "type": "array",
-            "title": "The items schema",
-            "description": "An explanation about the purpose of this instance.",
-            "default": [],
-            "examples": [
-                [
-                    [
-                        2,
-                        2
-                    ]
-                ]
+                {
+                    "items": {},
+                    "subtotal": "34.17",
+                    "numCartItems": 1
+                }
             ],
-            "additionalItems": false,
-            "items": {
-                "$id": "#/properties/items/items",
-                "anyOf": [
-                    {
-                        "$id": "#/properties/items/items/anyOf/0",
-                        "type": "array",
-                        "title": "The first anyOf schema",
-                        "description": "An explanation about the purpose of this instance.",
-                        "default": [],
-                        "examples": [
-                            [
-                                2,
-                                2
+            "required": [
+                "items",
+                "subtotal",
+                "numCartItems"
+            ],
+            "properties": {
+                "items": {
+                    "$id": "#/properties/cart/properties/items",
+                    "type": "object",
+                    "title": "The items schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {}
+                    ],
+                    "required": [],
+                    "additionalProperties": true
+                },
+                "subtotal": {
+                    "$id": "#/properties/cart/properties/subtotal",
+                    "type": "string",
+                    "title": "The subtotal schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "34.17"
+                    ]
+                },
+                "numCartItems": {
+                    "$id": "#/properties/cart/properties/numCartItems",
+                    "type": "integer",
+                    "title": "The numCartItems schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": 0,
+                    "examples": [
+                        1
+                    ]
+                }
+            },
+            "additionalProperties": true
+        },
+        "orderData": {
+            "$id": "#/properties/orderData",
+            "type": "object",
+            "title": "The orderData schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "shipping": {},
+                    "tax": "2.90",
+                    "total": "49.07",
+                    "customer": {
+                        "first_name": "Test",
+                        "last_name": "User",
+                        "email": "foo@gmail.com",
+                        "address": "1234 Main St",
+                        "address_line2": "",
+                        "city": "Big City",
+                        "state": "CA",
+                        "postal_code": "20394-3928",
+                        "phone_number": "(415) 556.5553",
+                        "user_id": 1
+                    }
+                }
+            ],
+            "required": [
+                "shipping",
+                "tax",
+                "total",
+                "customer"
+            ],
+            "properties": {
+                "shipping": {
+                    "$id": "#/properties/orderData/properties/shipping",
+                    "type": "object",
+                    "title": "The shipping schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {}
+                    ],
+                    "required": [],
+                    "additionalProperties": true
+                },
+                "tax": {
+                    "$id": "#/properties/orderData/properties/tax",
+                    "type": "string",
+                    "title": "The tax schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "2.90"
+                    ]
+                },
+                "total": {
+                    "$id": "#/properties/orderData/properties/total",
+                    "type": "string",
+                    "title": "The total schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "49.07"
+                    ]
+                },
+                "customer": {
+                    "$id": "#/properties/orderData/properties/customer",
+                    "type": "object",
+                    "title": "The customer schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {
+                            "first_name": "Test",
+                            "last_name": "User",
+                            "email": "foo@gmail.com",
+                            "address": "1234 Main St",
+                            "address_line2": "",
+                            "city": "Big City",
+                            "state": "CA",
+                            "postal_code": "20394-3928",
+                            "phone_number": "(415) 556.5553",
+                            "user_id": 1
+                        }
+                    ],
+                    "required": [
+                        "first_name",
+                        "last_name",
+                        "email",
+                        "address",
+                        "address_line2",
+                        "city",
+                        "state",
+                        "postal_code",
+                        "phone_number"
+                    ],
+                    "properties": {
+                        "first_name": {
+                            "$id": "#/properties/orderData/properties/customer/properties/first_name",
+                            "type": "string",
+                            "title": "The first_name schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "Test"
                             ]
-                        ],
-                        "additionalItems": false,
-                        "items": {
-                            "$id": "#/properties/items/items/anyOf/0/items",
-                            "anyOf": [
-                                {
-                                    "$id": "#/properties/items/items/anyOf/0/items/anyOf/0",
-                                    "type": "integer",
-                                    "title": "The first anyOf schema",
-                                    "description": "An explanation about the purpose of this instance.",
-                                    "default": 0,
-                                    "examples": [
-                                        2
-                                    ]
-                                }
+                        },
+                        "last_name": {
+                            "$id": "#/properties/orderData/properties/customer/properties/last_name",
+                            "type": "string",
+                            "title": "The last_name schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "User"
+                            ]
+                        },
+                        "email": {
+                            "$id": "#/properties/orderData/properties/customer/properties/email",
+                            "type": "string",
+                            "title": "The email schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "foo@gmail.com"
+                            ]
+                        },
+                        "address": {
+                            "$id": "#/properties/orderData/properties/customer/properties/address",
+                            "type": "string",
+                            "title": "The address schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "1234 Main St"
+                            ]
+                        },
+                        "address_line2": {
+                            "$id": "#/properties/orderData/properties/customer/properties/address_line2",
+                            "type": "string",
+                            "title": "The address_line2 schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                ""
+                            ]
+                        },
+                        "city": {
+                            "$id": "#/properties/orderData/properties/customer/properties/city",
+                            "type": "string",
+                            "title": "The city schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "Big City"
+                            ]
+                        },
+                        "state": {
+                            "$id": "#/properties/orderData/properties/customer/properties/state",
+                            "type": "string",
+                            "title": "The state schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "CA"
+                            ]
+                        },
+                        "postal_code": {
+                            "$id": "#/properties/orderData/properties/customer/properties/postal_code",
+                            "type": "string",
+                            "title": "The postal_code schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "20394-3928"
+                            ]
+                        },
+                        "phone_number": {
+                            "$id": "#/properties/orderData/properties/customer/properties/phone_number",
+                            "type": "string",
+                            "title": "The phone_number schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "(415) 556.5553"
+                            ]
+                        },
+                        "user_id": {
+                            "$id": "#/properties/orderData/properties/customer/properties/user_id",
+                            "type": "integer",
+                            "title": "The user_id schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": 0,
+                            "examples": [
+                                1
                             ]
                         }
-                    }
-                ]
-            }
+                    },
+                    "additionalProperties": true
+                }
+            },
+            "additionalProperties": true
+        },
+        "nonce": {
+            "$id": "#/properties/nonce",
+            "type": "string",
+            "title": "The nonce schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": "",
+            "examples": [
+                "tokencc_bf_xnddbn_wm4wrz_pg86zf_kgybs3_jw6"
+            ]
         }
     },
-    "additionalProperties": false
+    "additionalProperties": true
 }

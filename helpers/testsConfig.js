@@ -22,35 +22,35 @@ async function beforeAllHook() {
 }
 
 /**
- * Hooks to insert a user, distributor, product, and order, and to authenticate
+ * Hook to insert a user, distributor, product, and order, and to authenticate
  *  the user for respective tokens that are stored
  *  in the input `testData` parameter.
+ *
  * @param {Object} TEST_DATA - build the TEST_DATA object
  */
-async function beforeEachHook(TEST_DATA) {
+
+async function addTestDataHook(TEST_DATA) {
   try {
     // login a user, make a token, store the user and token
-    const hashedPassword = await bcrypt.hash('secret', BCRYPT_WORK_FACTOR);
+    const hashedPassword = await bcrypt.hash('Password1', BCRYPT_WORK_FACTOR);
     const testUserRes = await db.query(
       `INSERT INTO users (username, email, password, first_name, last_name,
-        address, apt_number, state, postal_code, phone_number, avatar_url,
+        address, address_line2, state, postal_code, phone_number, avatar_url,
         email_validated, is_admin)
-      VALUES ('testuser', 'abc@cde.com', $1, 'Testy', 'McTest',
+      VALUES ('testuser', 'testuser@gmail.com', $1, 'Testy', 'McTest',
         '123 Main St', '5', 'CA', 99999, '555.555.5555', 'http://site.com/image.jpg',
         true, true)
       RETURNING *`,
       [hashedPassword]
     );
-    // const response = await request(app).post('/login').send({
-    //   username: 'testuser',
-    //   password: 'secret',
-    // });
+
     TEST_DATA.testUser = testUserRes.rows[0];
     TEST_DATA.testUserToken = createToken({
       username: 'testuser',
       user_id: TEST_DATA.testUser.user_id,
       is_admin: true,
     });
+    TEST_DATA.password = 'Password1';
 
     //create test distributor in DB and save in TEST_DATA
     const distRes = await db.query(
@@ -60,8 +60,8 @@ async function beforeEachHook(TEST_DATA) {
 
     // create test product in DB and save in TEST_DATA
     const newProductRes = await db.query(
-      `INSERT INTO products (name, description, price, distributor, quantity)
-      VALUES ('TeeVee', 'Boob Tube', 10.00,  $1, 2)
+      `INSERT INTO products (name, description, price, distributor, quantity, net_weight)
+      VALUES ('TeeVee', 'Boob Tube', 10.00,  $1, 10, 1.3)
       RETURNING *`,
       [TEST_DATA.testDistributor.distributor_id]
     );
@@ -69,9 +69,9 @@ async function beforeEachHook(TEST_DATA) {
 
     // create test order in DB and save in TEST_DATA
     const newOrder = await db.query(
-      `INSERT INTO orders (customer, distinct_cart_items, total_items_quantity,
-        subtotal, tax, shipping_cost, total, shipping_method)
-      VALUES ($1, 1, 1, 10.00, 1.00, 1.00, 12.00, 'ups')
+      `INSERT INTO orders (customer, customer_info, total_items_quantity,
+        subtotal, tax, shipping_cost, total, shipping_method, processor_transaction)
+      VALUES ($1, '{}', 1, 10.00, 1.00, 1.00, 12.00, '{}', '{}')
       RETURNING *`,
       [TEST_DATA.testUser.user_id]
     );
@@ -88,7 +88,33 @@ async function beforeEachHook(TEST_DATA) {
   }
 }
 
-async function afterEachHook() {
+async function addUser2Hook(TEST_DATA) {
+  try {
+    // login a user, make a token, store the user and token
+    const hashedPassword = await bcrypt.hash('Password1', BCRYPT_WORK_FACTOR);
+    const testUser2Res = await db.query(
+      `INSERT INTO users (username, email, password, first_name, last_name,
+        address, address_line2, state, postal_code, phone_number, avatar_url,
+        email_validated, is_admin)
+      VALUES ('testuser2', 'testuser2@gmail.com', $1, 'Testy2', 'McTest2',
+        '123 Main St', '5', 'CA', 99999, '555.555.5555', 'http://site.com/image.jpg',
+        true, false)
+      RETURNING *`,
+      [hashedPassword]
+    );
+
+    TEST_DATA.testUser2 = testUser2Res.rows[0];
+    TEST_DATA.testUser2Token = createToken({
+      username: 'testuser2',
+      user_id: TEST_DATA.testUser2.user_id,
+      is_admin: false,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function clearDBTablesHook() {
   try {
     await db.query('DELETE FROM orders_products');
     await db.query('DELETE FROM orders');
@@ -109,9 +135,10 @@ async function afterAllHook() {
 }
 
 module.exports = {
-  afterAllHook,
-  afterEachHook,
   TEST_DATA,
   beforeAllHook,
-  beforeEachHook,
+  addTestDataHook,
+  addUser2Hook,
+  clearDBTablesHook,
+  afterAllHook,
 };

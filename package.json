@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest -i",
     "test:ci": "jest  __tests__/unit -i",
+    "test:debug": "node --inspect-brk C:/Users/Rich/AppData/Roaming/npm/node_modules/jest/bin/jest.js -i",
     "start:dev": "nodemon server.js",
     "start:debug": "nodemon --inspect-brk server.js",
     "start": "node server.js"
@@ -15,9 +16,11 @@
   "dependencies": {
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
+    "braintree": "^3.2.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "helmet": "^4.3.1",
     "jsonschema": "^1.4.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",

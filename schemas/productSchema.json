@@ -15,14 +15,16 @@
             "discount": 0.1,
             "quantity": 30,
             "distributor": 1,
-            "sku": "S08JF08SJ0-2"
+            "sku": "S08JF08SJ0-2",
+            "net_weight": 1.54
         }
     ],
     "required": [
         "_token",
         "name",
         "description",
-        "price"
+        "price",
+        "net_weight"
     ],
     "properties": {
         "_token": {
@@ -134,6 +136,16 @@
             "default": "",
             "examples": [
                 "All Departments"
+            ]
+        },
+        "net_weight": {
+            "$id": "#/properties/net_weight",
+            "type": "number",
+            "title": "The net_weight schema",
+            "description": "The net weight of the product.",
+            "default": 0.0,
+            "examples": [
+                25.0
             ]
         }
     },
