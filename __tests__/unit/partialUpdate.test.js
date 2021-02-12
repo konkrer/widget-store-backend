@@ -1,4 +1,4 @@
-const sqlForPartialUpdate = require('../../helpers/partialUpdate');
+const sqlForPartialUpdate = require('../../utils/partialUpdate');
 
 describe('partialUpdate()', () => {
   test('should generate proper partial update query w/ is_active clause', function () {

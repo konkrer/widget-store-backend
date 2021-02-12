@@ -6,7 +6,12 @@ const SECRET = process.env.SECRET_KEY || 'test';
 
 const PORT = +process.env.PORT || 3001;
 
-const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === 'test' ? 1 : 10;
+const BCRYPT_WORK_FACTOR =
+  process.env.NODE_ENV === 'test' ? 1 : +process.env.BCRYPT_WORK_FACTOR;
+
+const BRAINTREE_MERCHANT_ID = process.env.BRAINTREE_MERCHANT_ID;
+
+const BRAINTREE_PRIVATE_KEY = process.env.BRAINTREE_PRIVATE_KEY;
 
 /**
  * Array of table names that have an is_active column to
@@ -37,4 +42,6 @@ module.exports = {
   DB_URI,
   BCRYPT_WORK_FACTOR,
   IS_ACTIVE_TABLES,
+  BRAINTREE_MERCHANT_ID,
+  BRAINTREE_PRIVATE_KEY,
 };

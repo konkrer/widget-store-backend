@@ -5,7 +5,7 @@ const router = new express.Router();
 const { validate } = require('jsonschema');
 
 const userAuthSchema = require('../schemas/userAuthSchema.json');
-const createToken = require('../helpers/createToken');
+const createToken = require('../utils/createToken');
 const User = require('../models/user');
 
 router.post('/login', async function (req, res, next) {

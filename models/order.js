@@ -1,6 +1,7 @@
 const db = require('../db');
 const braintreeGateway = require('../braintreeGateway');
-const sqlForPartialUpdate = require('../helpers/partialUpdate');
+const sqlForPartialUpdate = require('../utils/partialUpdate');
+const { verifyOrderDataValid } = require('../utils/verifyOrderDataValid');
 
 /** Related methods for orders. */
 
@@ -40,7 +41,12 @@ class Order {
   }
 
   /**
-   * Create a new order row from data obj input.
+   * Create a new order.
+   *
+   * Verify total price calculation from data.cart.items data.
+   * Alter product quantity for ordered items.
+   * Make Braintree transaction.
+   * Create new order row.
    * Create a new orders_product row for each distinct item in cart (with quantity).
    */
 
@@ -64,7 +70,17 @@ class Order {
     try {
       // perform transaction
       await db.query('BEGIN');
-      debugger;
+
+      // verify price data from front end is accurate. throws on any issue.
+      await verifyOrderDataValid(
+        items,
+        subtotal,
+        tax,
+        shipping,
+        total,
+        customer.state
+      );
+
       // decrement in-stock quantities for purchased products
       for (let { product_id, quantity, name } of Object.values(items)) {
         // note product being alterd in case error is thrown

@@ -11,9 +11,10 @@ const {
   TEST_DATA,
   beforeAllHook,
   addTestDataHook,
+  addUser2Hook,
   clearDBTablesHook,
   afterAllHook,
-} = require('../../helpers/testsConfig');
+} = require('../../utils/testsConfig');
 
 beforeAll(async function () {
   await beforeAllHook();
@@ -21,6 +22,8 @@ beforeAll(async function () {
 
 beforeEach(async function () {
   await addTestDataHook(TEST_DATA);
+  // add non-admin user
+  await addUser2Hook(TEST_DATA);
 });
 
 afterEach(async function () {
@@ -32,12 +35,17 @@ afterAll(async function () {
 });
 
 describe('GET /distributors', function () {
-  test('Gets a list of all distributors', async function () {
+  test('Gets a list of all distributors with any token', async function () {
     const response = await client
       .get('/distributors')
-      .send({ _token: TEST_DATA.testUserToken });
-    expect(response.body.distributors).toHaveLength(1);
+      .send({ _token: TEST_DATA.testUser2Token });
+    expect(response.body.distributors).toHaveLength(2);
     expect(response.body.distributors[0]).toHaveProperty('name');
+  });
+
+  test('Fails with 401 with no token', async function () {
+    const response = await client.get('/distributors').send({ _token: null });
+    expect(response.statusCode).toBe(401);
   });
 });
 
@@ -46,10 +54,17 @@ describe('GET /distributors/:id', function () {
     const response = await client
       .get(`/distributors/${TEST_DATA.testDistributor.distributor_id}`)
       .send({
-        _token: TEST_DATA.testUserToken,
+        _token: TEST_DATA.testUser2Token,
       });
     expect(response.body.distributor).toHaveProperty('name');
     expect(response.body.distributor.name).toBe('DistCo');
+  });
+
+  test('Fails with 401 with no token', async function () {
+    const response = await client
+      .get(`/distributors/${TEST_DATA.testDistributor.distributor_id}`)
+      .send({ _token: null });
+    expect(response.statusCode).toBe(401);
   });
 
   test('Responds with a 404 if it cannot find the distributor in question', async function () {
@@ -71,12 +86,34 @@ describe('POST /distributors', function () {
     expect(response.body.distributor.name).toEqual('Products 4U');
   });
 
+  test('fails with non-admin token', async function () {
+    const response = await client.post('/distributors').send({
+      name: 'Products 4U',
+      _token: TEST_DATA.testUser2Token,
+    });
+    expect(response.statusCode).toBe(401);
+  });
+
   test('Prevents creating a distributor with duplicate name', async function () {
     const response = await client.post('/distributors').send({
       _token: TEST_DATA.testUserToken,
       name: 'DistCo',
     });
     expect(response.statusCode).toBe(409);
+  });
+
+  test('Fails with missing name', async function () {
+    const response = await client.post('/distributors').send({
+      _token: TEST_DATA.testUserToken,
+    });
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('Fails with missing token', async function () {
+    const response = await client.post('/distributors').send({
+      name: 'Products 4U',
+    });
+    expect(response.statusCode).toBe(401);
   });
 });
 
@@ -88,6 +125,7 @@ describe('PATCH /distributors/:id', function () {
         name: 'xkcd',
         _token: TEST_DATA.testUserToken,
       });
+    expect(response.statusCode).toBe(200);
     expect(response.body.distributor).toHaveProperty('name');
     expect(response.body.distributor.name).toBe('xkcd');
   });
@@ -115,6 +153,16 @@ describe('PATCH /distributors/:id', function () {
       });
     expect(response.statusCode).toBe(404);
   });
+
+  test('Fails with non-admin token', async function () {
+    const response = await client
+      .patch(`/distributors/${TEST_DATA.testDistributor.distributor_id}`)
+      .send({
+        name: 'xkcd',
+        _token: TEST_DATA.testUser2Token,
+      });
+    expect(response.statusCode).toBe(401);
+  });
 });
 
 describe('DELETE /distributors/:id', function () {
@@ -133,5 +181,21 @@ describe('DELETE /distributors/:id', function () {
       _token: TEST_DATA.testUserToken,
     });
     expect(response.statusCode).toBe(404);
+  });
+
+  test('Fails with 401 with non-admin token', async function () {
+    const response = await client
+      .delete(`/distributors/${TEST_DATA.testDistributor.distributor_id}`)
+      .send({
+        _token: TEST_DATA.testUser2Token,
+      });
+  });
+
+  test('Fails with 401 with no token', async function () {
+    const response = await client
+      .delete(`/distributors/${TEST_DATA.testDistributor.distributor_id}`)
+      .send({
+        _token: null,
+      });
   });
 });

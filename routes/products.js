@@ -14,12 +14,8 @@ const productUpdateSchema = require('../schemas/productUpdateSchema.json');
 /** GET / => {products: [product, ...]} */
 
 router.get('/', async function (req, res, next) {
-  try {
-    const products = await Product.findAll(req.query);
-    return res.json({ products });
-  } catch (err) {
-    return next(err);
-  }
+  const products = await Product.findAll(req.query);
+  return res.json({ products });
 });
 
 /** GET /[productId] => {product: product} */

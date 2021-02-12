@@ -26,6 +26,7 @@ app.use('/', authRoutes);
 /** 404 handler */
 
 app.use(function (req, res, next) {
+  debugger;
   const err = new Error('Not Found');
   err.status = 404;
 
@@ -36,8 +37,10 @@ app.use(function (req, res, next) {
 /** general error handler */
 
 app.use(function (err, req, res, next) {
-  if (process.env.NODE_ENV !== 'test' && err.stack) console.log(err.stack);
+  /* istanbul ignore next */
+  if (process.env.NODE_ENV !== 'test' && err.stack) console.error(err.stack);
 
+  /* istanbul ignore next */
   res.status(err.status || 500);
 
   return res.json({

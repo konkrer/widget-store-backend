@@ -19,9 +19,10 @@ const {
   beforeAllHook,
   addTestDataHook,
   addUser2Hook,
+  addPlaceOrderDataHook,
   clearDBTablesHook,
   afterAllHook,
-} = require('../../helpers/testsConfig');
+} = require('../../utils/testsConfig');
 
 beforeAll(async function () {
   await beforeAllHook();
@@ -29,6 +30,7 @@ beforeAll(async function () {
 
 beforeEach(async function () {
   await addTestDataHook(TEST_DATA);
+  addPlaceOrderDataHook(TEST_DATA);
 });
 
 afterEach(async function () {
@@ -95,98 +97,152 @@ describe('GET /orders/:id', function () {
 
 describe('POST /orders', function () {
   test('Creates a new order with items in stock', async function () {
-    const response = await client.post(`/orders`).send({
-      cart: {
-        items: {
-          [TEST_DATA.testProduct.product_id]: {
-            product_id: TEST_DATA.testProduct.product_id,
-            quantity: 1,
-            name: 'TeeVee',
-          },
-        },
-        subtotal: '10.00',
-        numCartItems: 1,
-      },
-      orderData: {
-        shipping: { details: { cost: '12.00' } },
-        tax: '0.85',
-        total: '22.85',
-        customer: {
-          first_name: 'Test',
-          last_name: 'User',
-          email: 'foo@gmail.com',
-          address: '1234 Main St',
-          address_line2: '',
-          city: 'Big City',
-          state: 'CA',
-          postal_code: '20394-3928',
-          phone_number: '(415) 556.5553',
-          user_id: TEST_DATA.testUser.user_id,
-        },
-      },
-      nonce: 'tokencc_bf_xnddbn_wm4wrz_pg86zf_kgybs3_jw6',
-    });
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
+    expect(response.statusCode).toBe(201);
+    expect(response.body.order).toHaveProperty('order_id');
+  });
+
+  test('Creates a new guest order with items in stock', async function () {
+    delete TEST_DATA.placeOrderData.orderData.customer.user_id;
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
     expect(response.statusCode).toBe(201);
     expect(response.body.order).toHaveProperty('order_id');
   });
 
   test('Rejects new order with items out of stock', async function () {
-    const response = await client.post(`/orders`).send({
-      cart: {
-        items: {
-          [TEST_DATA.testProduct.product_id]: {
-            product_id: TEST_DATA.testProduct.product_id,
-            quantity: 11,
-            name: 'TeeVee',
-          },
-        },
-        subtotal: '10.00',
-        numCartItems: 11,
-      },
-      orderData: {
-        shipping: { details: { cost: '12.00' } },
-        tax: '0.85',
-        total: '22.85',
-        customer: {
-          first_name: 'Test',
-          last_name: 'User',
-          email: 'foo@gmail.com',
-          address: '1234 Main St',
-          address_line2: '',
-          city: 'Big City',
-          state: 'CA',
-          postal_code: '20394-3928',
-          phone_number: '(415) 556.5553',
-          user_id: TEST_DATA.testUser.user_id,
+    // only 10 in stock
+    TEST_DATA.placeOrderData.cart = {
+      items: {
+        [TEST_DATA.testProduct.product_id]: {
+          product_id: TEST_DATA.testProduct.product_id,
+          quantity: 11,
+          name: 'TeeVee',
+          price: '10.00',
+          discount: '0.00',
         },
       },
-      nonce: 'tokencc_bf_xnddbn_wm4wrz_pg86zf_kgybs3_jw6',
-    });
+      subtotal: '110.00',
+      numCartItems: 11,
+    };
+    TEST_DATA.placeOrderData.orderData.tax = '9.35';
+    TEST_DATA.placeOrderData.orderData.total = '131.35';
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
     expect(response.statusCode).toBe(409);
     expect(response.body).toHaveProperty('error');
   });
 
-  test('Prevents creating a order without a required field', async function () {
-    const response = await client.post(`/orders`).send({
-      orderData: {
-        shipping: { details: { cost: '12.00' } },
-        tax: '0.85',
-        total: '22.85',
-        customer: {
-          first_name: 'Test',
-          last_name: 'User',
-          email: 'foo@gmail.com',
-          address: '1234 Main St',
-          address_line2: '',
-          city: 'Big City',
-          state: 'CA',
-          postal_code: '20394-3928',
-          phone_number: '(415) 556.5553',
-          user_id: TEST_DATA.testUser.user_id,
+  test('Rejects new order with bad item price data', async function () {
+    TEST_DATA.placeOrderData.cart = {
+      items: {
+        [TEST_DATA.testProduct.product_id]: {
+          product_id: TEST_DATA.testProduct.product_id,
+          quantity: 1,
+          name: 'TeeVee',
+          price: '1.00',
+          discount: '0.00',
         },
       },
-      nonce: 'tokencc_bf_xnddbn_wm4wrz_pg86zf_kgybs3_jw6',
-    });
+      subtotal: '10.00',
+      numCartItems: 1,
+    };
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  test('Rejects new order with bad item discount data', async function () {
+    TEST_DATA.placeOrderData.cart = {
+      items: {
+        [TEST_DATA.testProduct.product_id]: {
+          product_id: TEST_DATA.testProduct.product_id,
+          quantity: 1,
+          name: 'TeeVee',
+          price: '10.00',
+          discount: '0.50',
+        },
+      },
+      subtotal: '10.00',
+      numCartItems: 1,
+    };
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  test('Rejects new order with bad subtotal data', async function () {
+    TEST_DATA.placeOrderData.cart = {
+      items: {
+        [TEST_DATA.testProduct.product_id]: {
+          product_id: TEST_DATA.testProduct.product_id,
+          quantity: 1,
+          name: 'TeeVee',
+          price: '10.00',
+          discount: '0.00',
+        },
+      },
+      subtotal: '1.00',
+      numCartItems: 1,
+    };
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  test('Rejects new order with bad tax data', async function () {
+    TEST_DATA.placeOrderData.orderData.tax = '0.00';
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
+
+    expect(response.statusCode).toBe(409);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  test('Rejects new order with bad total data', async function () {
+    TEST_DATA.placeOrderData.orderData.total = '1.85';
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
+    expect(response.statusCode).toBe(409);
+    expect(response.body).toHaveProperty('error');
+  });
+
+  test('Prevents creating a order without a cart field', async function () {
+    delete TEST_DATA.placeOrderData.cart;
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('Prevents creating a order without a orderData field', async function () {
+    delete TEST_DATA.placeOrderData.orderData;
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('Prevents creating a order without a nonce field', async function () {
+    delete TEST_DATA.placeOrderData.nonce;
+    const response = await client
+      .post(`/orders`)
+      .send(TEST_DATA.placeOrderData);
     expect(response.statusCode).toBe(400);
   });
 });

@@ -58,6 +58,13 @@ async function addTestDataHook(TEST_DATA) {
     );
     TEST_DATA.testDistributor = distRes.rows[0];
 
+    //create test distributor 2 in DB and save in TEST_DATA
+    const distRes2 = await db.query(
+      `INSERT INTO distributors (name, logo_url) 
+      VALUES ('DistInc', 'example@example.com') RETURNING *`
+    );
+    TEST_DATA.testDistributor2 = distRes2.rows[0];
+
     // create test product in DB and save in TEST_DATA
     const newProductRes = await db.query(
       `INSERT INTO products (name, description, price, distributor, quantity, net_weight)
@@ -114,6 +121,42 @@ async function addUser2Hook(TEST_DATA) {
   }
 }
 
+function addPlaceOrderDataHook(TEST_DATA) {
+  TEST_DATA.placeOrderData = {
+    cart: {
+      items: {
+        [TEST_DATA.testProduct.product_id]: {
+          product_id: TEST_DATA.testProduct.product_id,
+          quantity: 1,
+          name: 'TeeVee',
+          price: '10.00',
+          discount: '0.00',
+        },
+      },
+      subtotal: '10.00',
+      numCartItems: 1,
+    },
+    orderData: {
+      shipping: { details: { cost: '12.00' } },
+      tax: '0.85',
+      total: '22.85',
+      customer: {
+        first_name: 'Test',
+        last_name: 'User',
+        email: 'foo@gmail.com',
+        address: '1234 Main St',
+        address_line2: '',
+        city: 'Big City',
+        state: 'CA',
+        postal_code: '20394-3928',
+        phone_number: '(415) 556.5553',
+        user_id: TEST_DATA.testUser.user_id,
+      },
+    },
+    nonce: 'tokencc_bf_xnddbn_wm4wrz_pg86zf_kgybs3_jw6',
+  };
+}
+
 async function clearDBTablesHook() {
   try {
     await db.query('DELETE FROM orders_products');
@@ -139,6 +182,7 @@ module.exports = {
   beforeAllHook,
   addTestDataHook,
   addUser2Hook,
+  addPlaceOrderDataHook,
   clearDBTablesHook,
   afterAllHook,
 };

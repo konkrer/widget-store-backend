@@ -11,17 +11,13 @@ const { validate } = require('jsonschema');
 const userNewSchema = require('../schemas/userNewSchema.json');
 const userUpdateSchema = require('../schemas/userUpdateSchema.json');
 
-const createToken = require('../helpers/createToken');
+const createToken = require('../utils/createToken');
 
 /** GET / => {users: [user, ...]} */
 
 router.get('/', adminRequired, async function (req, res, next) {
-  try {
-    const users = await User.findAll();
-    return res.json({ users });
-  } catch (err) {
-    return next(err);
-  }
+  const users = await User.findAll();
+  return res.json({ users });
 });
 
 /** GET /[username] => {user: user} */
@@ -39,7 +35,6 @@ router.get('/:username', ensureCorrectUser, async function (req, res, next) {
 
 router.post('/', async function (req, res, next) {
   try {
-    debugger;
     const validation = validate(req.body, userNewSchema);
 
     if (!validation.valid) {
@@ -89,7 +84,7 @@ router.patch('/:username', ensureCorrectUser, async function (req, res, next) {
     const user = await User.update(req.params.username, req.body);
 
     // if changed username create new token.
-    if (req.body.username !== req.params.username) {
+    if (req.body.username && req.body.username !== req.params.username) {
       var token = createToken(user);
     }
     return token ? res.json({ user, token }) : res.json({ user });

@@ -3,11 +3,7 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
 
-const {
-  adminRequired,
-  ensureCorrectUserId,
-  authRequired,
-} = require('../middleware/auth');
+const { adminRequired, ensureCorrectUser } = require('../middleware/auth');
 
 const Order = require('../models/order');
 const { validate } = require('jsonschema');
@@ -18,26 +14,22 @@ const orderUpdateSchema = require('../schemas/orderUpdateSchema.json');
 /** GET / => {orders: [order, ...]} */
 
 router.get('/', adminRequired, async function (req, res, next) {
-  try {
-    const orders = await Order.findAll(req.query);
-    return res.json({ orders });
-  } catch (err) {
-    return next(err);
-  }
+  const orders = await Order.findAll();
+  return res.json({ orders });
 });
 
 /** GET /[orderId] => {order: order} */
 
-router.get('/:id', authRequired, async function (req, res, next) {
+router.get('/:id', ensureCorrectUser, async function (req, res, next) {
   try {
     const order = await Order.findOne(req.params.id);
 
-    // if not admin order.customer must equal requesting user.
-    if (!req.is_admin && order.customer !== req.user_id) {
-      const authError = new Error('You are unauthorized to view this order.');
-      authError.status = 401;
-      throw authError;
-    }
+    // // if not admin order.customer must equal requesting user.
+    // if (!req.is_admin && order.customer !== req.user_id) {
+    //   const authError = new Error('You are unauthorized to view this order.');
+    //   authError.status = 401;
+    //   throw authError;
+    // }
 
     delete order.processor_transaction;
     return res.json({ order });

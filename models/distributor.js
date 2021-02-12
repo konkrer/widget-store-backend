@@ -1,5 +1,5 @@
 const db = require('../db');
-const sqlForPartialUpdate = require('../helpers/partialUpdate');
+const sqlForPartialUpdate = require('../utils/partialUpdate');
 
 DEFAULT_LOGO =
   'https://www.af-affinity.co.uk/wp-content/uploads/2015/09/business-icon-reversed.png';

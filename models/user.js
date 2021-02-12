@@ -1,6 +1,6 @@
 const db = require('../db');
 const bcrypt = require('bcrypt');
-const partialUpdate = require('../helpers/partialUpdate');
+const partialUpdate = require('../utils/partialUpdate');
 
 const { BCRYPT_WORK_FACTOR } = require('../config');
 

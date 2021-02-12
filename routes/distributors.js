@@ -14,12 +14,8 @@ const distributorUpdateSchema = require('../schemas/distributorUpdateSchema.json
 /** GET /  =>  {distributors: [distributor, distributor]}  */
 
 router.get('/', authRequired, async function (req, res, next) {
-  try {
-    const distributors = await Distributor.findAll(req.query);
-    return res.json({ distributors });
-  } catch (err) {
-    return next(err);
-  }
+  const distributors = await Distributor.findAll();
+  return res.json({ distributors });
 });
 
 /** GET /[distributorId]  =>  {distributor: distributor} */

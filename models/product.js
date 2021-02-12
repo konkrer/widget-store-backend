@@ -1,5 +1,5 @@
 const db = require('../db');
-const sqlForPartialUpdate = require('../helpers/partialUpdate');
+const sqlForPartialUpdate = require('../utils/partialUpdate');
 
 /** Related methods for products. */
 

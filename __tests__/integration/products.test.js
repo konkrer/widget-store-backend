@@ -1,7 +1,7 @@
 // npm packages
 const request = require('supertest');
 
-// app imports
+// local imports
 const app = require('../../app');
 
 // create test client to call API routes
@@ -9,18 +9,15 @@ const client = request(app);
 
 const {
   TEST_DATA,
-  beforeAllHook,
   addTestDataHook,
+  addUser2Hook,
   clearDBTablesHook,
   afterAllHook,
-} = require('../../helpers/testsConfig');
-
-beforeAll(async function () {
-  await beforeAllHook();
-});
+} = require('../../utils/testsConfig');
 
 beforeEach(async function () {
   await addTestDataHook(TEST_DATA);
+  await addUser2Hook(TEST_DATA);
 });
 
 afterEach(async function () {
@@ -129,10 +126,71 @@ describe('POST /products', function () {
       name: 'TeeVee',
       description: 'Rain unbrella.',
       price: 123.09,
-      _token: TEST_DATA.testUserToken,
       net_weight: 1.2,
+      _token: TEST_DATA.testUserToken,
     });
     expect(response.statusCode).toBe(409);
+  });
+
+  test('Prevents creating a product with missing name', async function () {
+    const response = await client.post('/products').send({
+      description: 'Rain unbrella.',
+      price: 123.09,
+      net_weight: 1.2,
+      _token: TEST_DATA.testUserToken,
+    });
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('Prevents creating a product with missing description', async function () {
+    const response = await client.post('/products').send({
+      name: 'TeeVee',
+      price: 123.09,
+      net_weight: 1.2,
+      _token: TEST_DATA.testUserToken,
+    });
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('Prevents creating a product with missing price', async function () {
+    const response = await client.post('/products').send({
+      name: 'TeeVee',
+      description: 'Rain unbrella.',
+      net_weight: 1.2,
+      _token: TEST_DATA.testUserToken,
+    });
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('Prevents creating a product with missing net weight', async function () {
+    const response = await client.post('/products').send({
+      name: 'TeeVee',
+      description: 'Rain unbrella.',
+      price: 123.09,
+      _token: TEST_DATA.testUserToken,
+    });
+    expect(response.statusCode).toBe(400);
+  });
+
+  test('Fails with non-admin token', async function () {
+    const response = await client.post('/products').send({
+      name: 'Umbrella',
+      description: 'Rain unbrella.',
+      price: 123.09,
+      _token: TEST_DATA.testUser2Token,
+      net_weight: 1.2,
+    });
+    expect(response.statusCode).toBe(401);
+  });
+
+  test('Fails with no token', async function () {
+    const response = await client.post('/products').send({
+      name: 'Umbrella',
+      description: 'Rain unbrella.',
+      price: 123.09,
+      net_weight: 1.2,
+    });
+    expect(response.statusCode).toBe(401);
   });
 });
 

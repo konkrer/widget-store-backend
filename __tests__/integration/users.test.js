@@ -18,7 +18,7 @@ const {
   clearDBTablesHook,
   afterAllHook,
   addUser2Hook,
-} = require('../../helpers/testsConfig');
+} = require('../../utils/testsConfig');
 
 beforeAll(async function () {
   await beforeAllHook();
@@ -116,9 +116,10 @@ describe('GET /users/:username', function () {
   });
 
   test('Responds with a 401 if username does not match token', async function () {
+    await addUser2Hook(TEST_DATA);
     const response = await client
       .get(`/users/yaaasss`)
-      .send({ _token: `${TEST_DATA.testUserToken}` });
+      .send({ _token: `${TEST_DATA.testUser2Token}` });
     expect(response.statusCode).toBe(401);
   });
 
@@ -146,6 +147,7 @@ describe('PATCH /users/:username', function () {
         first_name: 'Homer',
         _token: `${TEST_DATA.testUserToken}`,
       });
+    expect(response.body).not.toHaveProperty('token');
     const user = response.body.user;
     expect(user).toHaveProperty('username');
     expect(user).not.toHaveProperty('password');
@@ -171,9 +173,10 @@ describe('PATCH /users/:username', function () {
   });
 
   test('Responds with a 401 if token does not match username', async function () {
+    await addUser2Hook(TEST_DATA);
     const response = await client
       .patch(`/users/bunny`)
-      .send({ password: 'foo123FOO45', _token: `${TEST_DATA.testUserToken}` });
+      .send({ password: 'foo123FOO45', _token: `${TEST_DATA.testUser2Token}` });
     expect(response.statusCode).toBe(401);
   });
 
@@ -221,9 +224,10 @@ describe('DELETE /users/:username', function () {
   });
 
   test('Forbids a user from deleting another user', async function () {
+    await addUser2Hook(TEST_DATA);
     const response = await client
-      .delete(`/users/notme`)
-      .send({ _token: `${TEST_DATA.testUserToken}` });
+      .delete(`/users/rando`)
+      .send({ _token: `${TEST_DATA.testUser2Token}` });
     expect(response.statusCode).toBe(401);
   });
 
