@@ -6,6 +6,7 @@
   "scripts": {
     "test": "jest -i",
     "test:ci": "jest  __tests__/unit -i",
+    "test:coverage": "jest -i --coverage",
     "test:debug": "node --inspect-brk C:/Users/Rich/AppData/Roaming/npm/node_modules/jest/bin/jest.js -i",
     "start:dev": "nodemon server.js",
     "start:debug": "nodemon --inspect-brk server.js",
@@ -33,7 +34,7 @@
   },
   "jest": {
     "coveragePathIgnorePatterns": [
-      "<rootDir>/node_modules/", 
+      "<rootDir>/node_modules/",
       "<rootDir>/utils/testsConfig.js",
       "<rootDir>/config.js"
     ]
