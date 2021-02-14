@@ -26,7 +26,6 @@ app.use('/', authRoutes);
 /** 404 handler */
 
 app.use(function (req, res, next) {
-  debugger;
   const err = new Error('Not Found');
   err.status = 404;
 
