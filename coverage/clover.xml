@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1613252778910" clover="3.2.0">
-  <project timestamp="1613252778910" name="All files">
-    <metrics statements="521" coveredstatements="521" conditionals="125" coveredconditionals="125" methods="68" coveredmethods="68" elements="714" coveredelements="714" complexity="0" loc="521" ncloc="521" packages="5" files="17" classes="17"/>
+<coverage generated="1613359676354" clover="3.2.0">
+  <project timestamp="1613359676354" name="All files">
+    <metrics statements="519" coveredstatements="519" conditionals="125" coveredconditionals="125" methods="68" coveredmethods="68" elements="712" coveredelements="712" complexity="0" loc="519" ncloc="519" packages="5" files="17" classes="17"/>
     <package name="backend">
-      <metrics statements="36" coveredstatements="36" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+      <metrics statements="34" coveredstatements="34" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="app.js" path="C:\Users\Rich\Programming\Dev\widgit_store\backend\app.js">
-        <metrics statements="27" coveredstatements="27" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
+        <metrics statements="26" coveredstatements="26" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
         <line num="3" count="7" type="stmt"/>
         <line num="4" count="7" type="stmt"/>
         <line num="5" count="7" type="stmt"/>
@@ -28,11 +28,10 @@
         <line num="28" count="7" type="stmt"/>
         <line num="29" count="1" type="stmt"/>
         <line num="30" count="1" type="stmt"/>
-        <line num="31" count="1" type="stmt"/>
-        <line num="34" count="1" type="stmt"/>
-        <line num="39" count="7" type="stmt"/>
-        <line num="46" count="63" type="stmt"/>
-        <line num="52" count="7" type="stmt"/>
+        <line num="33" count="1" type="stmt"/>
+        <line num="38" count="7" type="stmt"/>
+        <line num="45" count="63" type="stmt"/>
+        <line num="51" count="7" type="stmt"/>
       </file>
       <file name="braintreeGateway.js" path="C:\Users\Rich\Programming\Dev\widgit_store\backend\braintreeGateway.js">
         <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
@@ -42,12 +41,11 @@
         <line num="11" count="7" type="stmt"/>
       </file>
       <file name="db.js" path="C:\Users\Rich\Programming\Dev\widgit_store\backend\db.js">
-        <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
+        <metrics statements="4" coveredstatements="4" conditionals="0" coveredconditionals="0" methods="0" coveredmethods="0"/>
         <line num="3" count="7" type="stmt"/>
         <line num="4" count="7" type="stmt"/>
-        <line num="6" count="7" type="stmt"/>
-        <line num="10" count="7" type="stmt"/>
-        <line num="12" count="7" type="stmt"/>
+        <line num="16" count="7" type="stmt"/>
+        <line num="28" count="7" type="stmt"/>
       </file>
     </package>
     <package name="backend.middleware">

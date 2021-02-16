@@ -8,14 +8,6 @@ const userAuthSchema = require('../schemas/userAuthSchema.json');
 const createToken = require('../utils/createToken');
 const User = require('../models/user');
 
-router.get('/test', async function (req, res, next) {
-  try {
-    return res.json({ working: true });
-  } catch (e) {
-    return next(e);
-  }
-});
-
 router.post('/login', async function (req, res, next) {
   try {
     const validation = validate(req.body, userAuthSchema);

@@ -7,6 +7,7 @@ const { DB_URI } = require('./config');
  * if so set ssl to configuration object as below.
  *
  * Otherwise set ssl null for development.  */
+/* istanbul ignore next */
 const ssl = DB_URI.startsWith('postgres://')
   ? { rejectUnauthorized: false }
   : null;
@@ -18,6 +19,7 @@ const client = new Client({
 });
 
 /** Connect Client to DB or throw error */
+/* istanbul ignore next */
 client.connect().catch(err => {
   console.error(err);
   throw err;
