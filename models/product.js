@@ -13,6 +13,7 @@ class Product {
     let whereExpressions = [];
     let queryValues = [];
     let orderBy = '';
+    const limit = ' LIMIT 21';
 
     // For each possible search term, add to whereExpressions and
     // queryValues so we can generate the right SQL
@@ -53,7 +54,8 @@ class Product {
 
     // Finalize query and return results
 
-    let finalQuery = baseQuery + whereExpressions.join(' AND ') + orderBy;
+    let finalQuery =
+      baseQuery + whereExpressions.join(' AND ') + orderBy + limit;
     const productsRes = await db.query(finalQuery, queryValues);
     return productsRes.rows;
   }
