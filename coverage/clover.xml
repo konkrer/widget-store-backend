@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1613359676354" clover="3.2.0">
-  <project timestamp="1613359676354" name="All files">
-    <metrics statements="519" coveredstatements="519" conditionals="125" coveredconditionals="125" methods="68" coveredmethods="68" elements="712" coveredelements="712" complexity="0" loc="519" ncloc="519" packages="5" files="17" classes="17"/>
+<coverage generated="1613560598571" clover="3.2.0">
+  <project timestamp="1613560598572" name="All files">
+    <metrics statements="518" coveredstatements="518" conditionals="125" coveredconditionals="125" methods="68" coveredmethods="68" elements="711" coveredelements="711" complexity="0" loc="518" ncloc="518" packages="5" files="17" classes="17"/>
     <package name="backend">
       <metrics statements="34" coveredstatements="34" conditionals="0" coveredconditionals="0" methods="2" coveredmethods="2"/>
       <file name="app.js" path="C:\Users\Rich\Programming\Dev\widgit_store\backend\app.js">
@@ -513,7 +513,7 @@
       </file>
     </package>
     <package name="backend.utils">
-      <metrics statements="60" coveredstatements="60" conditionals="14" coveredconditionals="14" methods="9" coveredmethods="9"/>
+      <metrics statements="59" coveredstatements="59" conditionals="14" coveredconditionals="14" methods="9" coveredmethods="9"/>
       <file name="createToken.js" path="C:\Users\Rich\Programming\Dev\widgit_store\backend\utils\createToken.js">
         <metrics statements="5" coveredstatements="5" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
         <line num="1" count="7" type="stmt"/>
@@ -523,25 +523,24 @@
         <line num="16" count="7" type="stmt"/>
       </file>
       <file name="moneyFuncts.js" path="C:\Users\Rich\Programming\Dev\widgit_store\backend\utils\moneyFuncts.js">
-        <metrics statements="18" coveredstatements="18" conditionals="6" coveredconditionals="6" methods="5" coveredmethods="5"/>
-        <line num="1" count="8" type="stmt"/>
+        <metrics statements="17" coveredstatements="17" conditionals="6" coveredconditionals="6" methods="5" coveredmethods="5"/>
         <line num="3" count="8" type="stmt"/>
-        <line num="7" count="14" type="cond" truecount="2" falsecount="0"/>
-        <line num="8" count="4" type="stmt"/>
-        <line num="9" count="4" type="stmt"/>
-        <line num="10" count="4" type="stmt"/>
-        <line num="15" count="12" type="stmt"/>
-        <line num="17" count="12" type="stmt"/>
-        <line num="18" count="12" type="stmt"/>
-        <line num="19" count="12" type="stmt"/>
-        <line num="26" count="24" type="cond" truecount="2" falsecount="0"/>
-        <line num="27" count="18" type="stmt"/>
-        <line num="28" count="18" type="stmt"/>
-        <line num="33" count="11" type="stmt"/>
-        <line num="34" count="11" type="stmt"/>
-        <line num="35" count="11" type="cond" truecount="2" falsecount="0"/>
-        <line num="36" count="11" type="stmt"/>
-        <line num="39" count="8" type="stmt"/>
+        <line num="5" count="8" type="stmt"/>
+        <line num="18" count="14" type="cond" truecount="2" falsecount="0"/>
+        <line num="19" count="4" type="stmt"/>
+        <line num="20" count="4" type="stmt"/>
+        <line num="35" count="12" type="stmt"/>
+        <line num="37" count="12" type="stmt"/>
+        <line num="38" count="12" type="stmt"/>
+        <line num="39" count="12" type="stmt"/>
+        <line num="54" count="24" type="cond" truecount="2" falsecount="0"/>
+        <line num="55" count="18" type="stmt"/>
+        <line num="56" count="18" type="stmt"/>
+        <line num="70" count="11" type="stmt"/>
+        <line num="71" count="11" type="stmt"/>
+        <line num="72" count="11" type="cond" truecount="2" falsecount="0"/>
+        <line num="73" count="11" type="stmt"/>
+        <line num="76" count="8" type="stmt"/>
       </file>
       <file name="partialUpdate.js" path="C:\Users\Rich\Programming\Dev\widgit_store\backend\utils\partialUpdate.js">
         <metrics statements="16" coveredstatements="16" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>

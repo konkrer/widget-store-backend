@@ -1,9 +1,39 @@
 # Widget-Store-Backend
 
-Backend API for widget-store generic storefront.
+Backend API for widget-store generic storefront. 100% test coverage.
 
 ###### Stack:
 
-Express, Postgres, pg, bcrypt, jsonwebtoken, jsonschema, supertest
+Express, Postgres, pg, bcrypt, jsonwebtoken, jsonschema, jest, supertest, istanbul, decimal.js
 
-![Database Schema Map](https://repository-images.githubusercontent.com/323063245/d9668d80-4291-11eb-88cd-98a2efd838bf)
+![Database Schema Map](https://repository-images.githubusercontent.com/323063245/dccd9800-70cd-11eb-8b37-cc63bb623873)
+
+###### Test Coverage:
+
+		--------------------------|---------|----------|---------|---------|-------------------
+		File                      | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
+		--------------------------|---------|----------|---------|---------|-------------------
+		All files                 |     100 |      100 |     100 |     100 | 
+		 backend                  |     100 |      100 |     100 |     100 | 
+		  app.js                  |     100 |      100 |     100 |     100 |                   
+		  braintreeGateway.js     |     100 |      100 |     100 |     100 |                   
+		  db.js                   |     100 |      100 |     100 |     100 | 
+		 backend/middleware       |     100 |      100 |     100 |     100 | 
+		  auth.js                 |     100 |      100 |     100 |     100 | 
+		 backend/models           |     100 |      100 |     100 |     100 | 
+		  distributor.js          |     100 |      100 |     100 |     100 |                   
+		  order.js                |     100 |      100 |     100 |     100 |                   
+		  product.js              |     100 |      100 |     100 |     100 | 
+		  user.js                 |     100 |      100 |     100 |     100 | 
+		 backend/routes           |     100 |      100 |     100 |     100 | 
+		  auth.js                 |     100 |      100 |     100 |     100 |                   
+		  distributors.js         |     100 |      100 |     100 |     100 |                   
+		  orders.js               |     100 |      100 |     100 |     100 | 
+		  products.js             |     100 |      100 |     100 |     100 |                   
+		  users.js                |     100 |      100 |     100 |     100 |                   
+		 backend/utils            |     100 |      100 |     100 |     100 | 
+		  createToken.js          |     100 |      100 |     100 |     100 |                   
+		  moneyFuncts.js          |     100 |      100 |     100 |     100 | 
+		  partialUpdate.js        |     100 |      100 |     100 |     100 | 
+		  verifyOrderDataValid.js |     100 |      100 |     100 |     100 | 
+		--------------------------|---------|----------|---------|---------|-------------------
