@@ -13,6 +13,8 @@ const BRAINTREE_MERCHANT_ID = process.env.BRAINTREE_MERCHANT_ID;
 
 const BRAINTREE_PRIVATE_KEY = process.env.BRAINTREE_PRIVATE_KEY;
 
+const BRAINTREE_PUBLIC_KEY = process.env.BRAINTREE_PUBLIC_KEY;
+
 /**
  * Array of table names that have an is_active column to
  * allow "soft delete" of rows in these tables.
@@ -43,5 +45,6 @@ module.exports = {
   BCRYPT_WORK_FACTOR,
   IS_ACTIVE_TABLES,
   BRAINTREE_MERCHANT_ID,
+  BRAINTREE_PUBLIC_KEY,
   BRAINTREE_PRIVATE_KEY,
 };
