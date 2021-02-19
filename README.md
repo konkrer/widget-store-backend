@@ -1,8 +1,9 @@
 # Widget-Store-Backend
+[![Node.js CI](https://github.com/konkrer/widget-store-backend/actions/workflows/node.js.yml/badge.svg)](https://github.com/konkrer/widget-store-backend/actions/workflows/node.js.yml)
 
-Backend API for widget-store generic storefront. 100% test coverage.
+##### Backend API for widget-store generic storefront. 100% test coverage.
 
-###### Stack:
+###### Tech Stack:
 
 Express, Postgres, pg, bcrypt, jsonwebtoken, jsonschema, jest, supertest, istanbul, decimal.js
 
