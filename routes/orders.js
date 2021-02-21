@@ -23,14 +23,6 @@ router.get('/', adminRequired, async function (req, res, next) {
 router.get('/:id', ensureCorrectUser, async function (req, res, next) {
   try {
     const order = await Order.findOne(req.params.id);
-
-    // // if not admin order.customer must equal requesting user.
-    // if (!req.is_admin && order.customer !== req.user_id) {
-    //   const authError = new Error('You are unauthorized to view this order.');
-    //   authError.status = 401;
-    //   throw authError;
-    // }
-
     delete order.processor_transaction;
     return res.json({ order });
   } catch (err) {

@@ -3,10 +3,13 @@ const braintreeGateway = require('../braintreeGateway');
 const sqlForPartialUpdate = require('../utils/partialUpdate');
 const { verifyOrderDataValid } = require('../utils/verifyOrderDataValid');
 
-/** Related methods for orders. */
+/** Database methods object for orders. */
 
 class Order {
-  /** Find all orders */
+  /** findAll()
+   *
+   * @param {object} data - The html request query params.
+   */
 
   static async findAll() {
     const ordersRes = await db.query(
@@ -16,7 +19,10 @@ class Order {
     return ordersRes.rows;
   }
 
-  /** Given a order id, return data about order. */
+  /** findOne()
+   *
+   * @param {number} order_id - the order ID
+   */
 
   static async findOne(order_id) {
     const orderRes = await db.query(
@@ -40,14 +46,17 @@ class Order {
     return order;
   }
 
-  /**
-   * Create a new order.
+  /** create()
    *
-   * Verify total price calculation from data.cart.items data.
+   * @param {object} data - order data object
+   *
+   * Verify total price calculation from data.cart.items.
    * Alter product quantity for ordered items.
    * Make Braintree transaction.
    * Create new order row.
-   * Create a new orders_product row for each distinct item in cart (with quantity).
+   * Create a new orders_product row for each distinct
+   * item in cart (with quantity).
+   *
    */
 
   static async create(data) {
@@ -154,13 +163,11 @@ class Order {
     }
   }
 
-  /** Update order data with `data`.
+  /** update()
+   * (PATCH)
    *
-   * This is a "partial update" --- it's fine if data doesn't contain
-   * all the fields; this only changes provided ones.
-   *
-   * Return data for changed order.
-   *
+   * @param {number} product_id
+   * @param {object} data
    */
 
   static async update(order_id, data) {
@@ -182,7 +189,10 @@ class Order {
     return order;
   }
 
-  /** Delete given order from database; returns undefined. */
+  /** remove()
+   *
+   * @param {number} product_id - the product id
+   */
 
   static async remove(order_id) {
     const result = await db.query(

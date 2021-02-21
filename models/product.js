@@ -1,10 +1,13 @@
 const db = require('../db');
 const sqlForPartialUpdate = require('../utils/partialUpdate');
 
-/** Related methods for products. */
+/** Database methods object for products. */
 
 class Product {
-  /** Find all products (can filter on terms in data). */
+  /** findAll()
+   *
+   * @param {object} data - The html request query params.
+   */
 
   static async findAll(data) {
     let baseQuery = `
@@ -15,8 +18,22 @@ class Product {
     let orderBy = '';
     const limit = ' LIMIT 21';
 
-    // For each possible search term, add to whereExpressions and
-    // queryValues so we can generate the right SQL
+    // For each possible filtering term, add to the where expression.
+
+    // If there is a base category of products (e.g. new, deals)
+    // get product_id's for that category group. All other selections below
+    // will be from within this category group.
+    if (data.category) {
+      const { ids, escapedIDString } = await this.getCategoryIds(data.category);
+      queryValues.push(...ids);
+      whereExpressions.push(`product_id in ( ${escapedIDString} )`);
+
+      // If orderby is not set, set orderby based on the category.
+      if (!data.order_by) {
+        data.order_by = data.category === 'deals' ? 'discount' : 'date_added';
+        data.order_by_sort = 'desc';
+      }
+    }
 
     if (data.query) {
       queryValues.push(`%${data.query}%`);
@@ -38,16 +55,19 @@ class Product {
       whereExpressions.push(`department = $${queryValues.length}`);
     }
 
+    // ORDER BY clause
     if (
-      // all sort parameters present and correct
+      // If all sort parameters present and correct use to set statement.
       data.order_by &&
       data.order_by_sort &&
-      ['name', 'rating', 'date_added', 'price'].includes(data.order_by) &&
+      ['name', 'rating', 'date_added', 'price', 'discount'].includes(
+        data.order_by
+      ) &&
       ['asc', 'desc'].includes(data.order_by_sort)
     )
       orderBy = ` ORDER BY ${data.order_by} ${data.order_by_sort}`;
     else {
-      orderBy = ' ORDER BY rating desc';
+      orderBy = ' ORDER BY rating DESC';
     }
 
     if (whereExpressions.length > 0) baseQuery += ' WHERE ';
@@ -56,11 +76,21 @@ class Product {
 
     let finalQuery =
       baseQuery + whereExpressions.join(' AND ') + orderBy + limit;
-    const productsRes = await db.query(finalQuery, queryValues);
-    return productsRes.rows;
+
+    try {
+      const productsRes = await db.query(finalQuery, queryValues);
+      return productsRes.rows;
+    } catch (error) {
+      console.log(finalQuery);
+      console.log(queryValues[0]);
+      return [];
+    }
   }
 
-  /** Given a product id, return data about product. */
+  /** findOne()
+   *
+   * @param {number} product_id - the product ID
+   */
 
   static async findOne(product_id) {
     const productRes = await db.query(
@@ -83,7 +113,10 @@ class Product {
     return product;
   }
 
-  /** Create a product (from data), update db, return new product data. */
+  /** create()
+   *
+   * @param {object} data - product data object
+   */
 
   static async create(data) {
     // duplicate name check
@@ -117,13 +150,11 @@ class Product {
     return result.rows[0];
   }
 
-  /** Update product data with `data`.
+  /** update()
+   * (PATCH)
    *
-   * This is a "partial update" --- it's fine if data doesn't contain
-   * all the fields; this only changes provided ones.
-   *
-   * Return data for changed product.
-   *
+   * @param {number} product_id
+   * @param {object} data
    */
 
   static async update(product_id, data) {
@@ -148,7 +179,10 @@ class Product {
     return product;
   }
 
-  /** Delete given product from database; returns undefined. */
+  /** remove()
+   *
+   * @param {number} product_id - the product id
+   */
 
   static async remove(product_id) {
     const result = await db.query(
@@ -165,6 +199,41 @@ class Product {
       notFound.status = 404;
       throw notFound;
     }
+  }
+
+  /** getCategoryIds()
+   *
+   * @param {string} category
+   *
+   * For a given base category of products (e.g. new, deals)
+   * get a set of product ids that represent
+   * that category. Those id's are then returned as
+   * a array of id numbers (e.g. [1,2,3]) and a SQL injection
+   * escape character string (e.g. "$1, $2, <...>")
+   *
+   */
+  static async getCategoryIds(category) {
+    let sqlStatement;
+
+    switch (category) {
+      case 'newProducts': {
+        sqlStatement = `SELECT product_id FROM products ORDER BY date_added DESC LIMIT 500`;
+        break;
+      }
+      case 'deals': {
+        sqlStatement = `SELECT product_id FROM products WHERE discount > 0`;
+        break;
+      }
+      default:
+        sqlStatement = `SELECT product_id FROM products WHERE discount > 0`;
+    }
+
+    const resp = await db.query(sqlStatement);
+
+    const ids = resp.rows.map(row => row.product_id);
+    const escapedIDString = resp.rows.map((row, i) => `$${i + 1}`).join(', ');
+
+    return { ids, escapedIDString };
   }
 }
 

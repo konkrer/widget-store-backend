@@ -4,10 +4,13 @@ const sqlForPartialUpdate = require('../utils/partialUpdate');
 DEFAULT_LOGO =
   'https://www.af-affinity.co.uk/wp-content/uploads/2015/09/business-icon-reversed.png';
 
-/** Related functions for distributors. */
+/** Database methods object for distributors. */
 
 class Distributor {
-  /** Find all distributors */
+  /** findAll()
+   *
+   * @param {object} data - The html request query params.
+   */
 
   static async findAll() {
     const distributorsRes = await db.query('SELECT * FROM distributors');
@@ -18,7 +21,10 @@ class Distributor {
     );
   }
 
-  /** Given a distributor id, return data about distributor. */
+  /** findOne()
+   *
+   * @param {number} distributor_id - the distributor ID
+   */
 
   static async findOne(id) {
     const distributorRes = await db.query(
@@ -43,7 +49,10 @@ class Distributor {
     return distributor;
   }
 
-  /** Create a distributor (from data), update db, return new distributor data. */
+  /** create()
+   *
+   * @param {object} data - product data object
+   */
 
   static async create(data) {
     const duplicateCheck = await db.query(
@@ -81,13 +90,11 @@ class Distributor {
     return result.rows[0];
   }
 
-  /** Update distributor data with `data`.
+  /** update()
+   * (PATCH)
    *
-   * This is a "partial update" --- it's fine if data doesn't contain
-   * all the fields; this only changes provided ones.
-   *
-   * Return data for changed distributor.
-   *
+   * @param {number} product_id
+   * @param {object} data
    */
 
   static async update(id, data) {
@@ -110,7 +117,10 @@ class Distributor {
     return distributor;
   }
 
-  /** Delete given distributor from database; returns undefined. */
+  /** remove()
+   *
+   * @param {number} product_id - the product id
+   */
 
   static async remove(id) {
     const result = await db.query(

@@ -4,12 +4,15 @@ const partialUpdate = require('../utils/partialUpdate');
 
 const { BCRYPT_WORK_FACTOR } = require('../config');
 
-/** Related functions for users. */
+/** Database methods object for users. */
 
 class User {
-  /** authenticate user with username, password. Returns user or throws err. */
+  /** authenticate()
+   *
+   * @param {object} data - user login data
+   */
+
   static async authenticate(data) {
-    // try to find the user first
     const result = await db.query(
       `SELECT user_id,
               username,
@@ -23,7 +26,7 @@ class User {
     );
     const user = result.rows[0];
     if (user) {
-      // compare hashed password to a new hash from password
+      // check password
       const isValid = await bcrypt.compare(data.password, user.password);
       if (isValid) {
         delete user['password'];
@@ -35,7 +38,10 @@ class User {
     throw invalidPass;
   }
 
-  /** Register user with data. Returns new user data. */
+  /** register()
+   *
+   * @param {object} data - user signup data
+   */
 
   static async register(data) {
     const duplicateNameCheck = await db.query(
@@ -90,9 +96,12 @@ class User {
     return result.rows[0];
   }
 
-  /** Find all users. */
+  /** findAll()
+   *
+   * @param {object} data - The html request query params.
+   */
 
-  static async findAll() {
+  static async findAll(data) {
     const result = await db.query(
       `SELECT username, first_name, last_name, email
           FROM users
@@ -102,7 +111,10 @@ class User {
     return result.rows;
   }
 
-  /** Given a username, return data about user. */
+  /** findOne()
+   *
+   * @param {string} username
+   */
 
   static async findOne(username) {
     const userRes = await db.query(
@@ -129,13 +141,11 @@ class User {
     return user;
   }
 
-  /** Update user data with `data`.
+  /** update()
+   * (PATCH)
    *
-   * This is a "partial update" --- it's fine if data doesn't contain
-   * all the fields; this only changes provided ones.
-   *
-   * Return data for changed user.
-   *
+   * @param {string} username
+   * @param {object} data
    */
 
   static async update(username, data) {
@@ -156,7 +166,10 @@ class User {
     return user;
   }
 
-  /** Delete given user from database; returns undefined. */
+  /** remove()
+   *
+   * @param {number} username
+   */
 
   static async remove(username) {
     let result = await db.query(

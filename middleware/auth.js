@@ -3,13 +3,13 @@
 const jwt = require('jsonwebtoken');
 const { SECRET } = require('../config');
 
-/** Ensure the decoded request token has:
- *  a valid token.
+/** authRequired()
+ *
+ * Ensure the request token has a valid signature.
  *
  * Add user data onto req as a convenience for view functions.
  *
  * If not, raises Unauthorized.
- *
  */
 
 function authRequired(req, res, next) {
@@ -27,13 +27,14 @@ function authRequired(req, res, next) {
   }
 }
 
-/** Ensure the decoded request token:
- * is an admin token.
+/** adminRequired()
+ *
+ * Ensure the verified and decoded request token:
+ *  - Is an admin token.
  *
  * Add user data onto req as a convenience for view functions.
  *
  * If not, raises Unauthorized.
- *
  */
 
 function adminRequired(req, res, next) {
@@ -58,15 +59,16 @@ function adminRequired(req, res, next) {
   }
 }
 
-/** Ensure the decoded request token has:
- * an id matching the path id parameter or
- * a username matching the path username parameter or
- * is an admin token.
+/** ensureCorrectUser()
+ *
+ * Ensure the verified and decoded request token has either:
+ *  - An id matching the path id parameter
+ *  - A username matching the path username parameter
+ *  - Or is an admin token.
  *
  * Add user data onto req as a convenience for view functions.
  *
  * If not, raises Unauthorized.
- *
  */
 
 function ensureCorrectUser(req, res, next) {

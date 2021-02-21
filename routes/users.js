@@ -52,26 +52,13 @@ router.post('/', async function (req, res, next) {
   }
 });
 
-/**
- * PATCH /[username] {userData} => {user: updatedUser}
- *
- * body.verify_password used to authenticate user (required).
- * body.password used to update password (optional).
- *
- * New token returned on username update.
- */
+/** PATCH /[username]  {userData} => {user: updatedUser} */
 
 router.patch('/:username', ensureCorrectUser, async function (req, res, next) {
   try {
     if ('user_id' in req.body || 'is_admin' in req.body) {
       return next({ status: 400, message: 'Not allowed' });
     }
-
-    // await User.authenticate({
-    //   username: req.params.username,
-    //   password: req.body.verify_password,
-    // });
-    // delete req.body.verify_password;
 
     const validation = validate(req.body, userUpdateSchema);
     if (!validation.valid) {
