@@ -16,7 +16,7 @@ class Product {
     let whereExpressions = [];
     let queryValues = [];
     let orderBy = '';
-    const limit = ' LIMIT 21';
+    const limit = ' LIMIT 63';
 
     // For each possible filtering term, add to the where expression.
 
