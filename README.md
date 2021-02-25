@@ -79,6 +79,8 @@ To ensure accuracy of money related calculations this app employs Decimal.js in 
 - decimal.js  
 \- utility class for discreet value calculations
 
+### Database Schema:
+
 ![Database Schema Map](https://repository-images.githubusercontent.com/323063245/dccd9800-70cd-11eb-8b37-cc63bb623873)
 
 
