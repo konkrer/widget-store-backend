@@ -3,6 +3,7 @@ const request = require('supertest');
 
 // local imports
 const app = require('../../app');
+const Product = require('../../models/product');
 
 // create test client to call API routes
 const client = request(app);
@@ -38,7 +39,6 @@ describe('GET /products', function () {
   test('Search query funtionality works', async function () {
     const posResp = await client.get('/products?query=tee');
     expect(posResp.body.products).toHaveLength(1);
-
     const negResp = await client.get('/products?query=to');
     expect(negResp.body.products).toHaveLength(0);
   });
@@ -46,7 +46,6 @@ describe('GET /products', function () {
   test('Search department funtionality works', async function () {
     const posResp = await client.get('/products?department=All+Departments');
     expect(posResp.body.products).toHaveLength(1);
-
     const negResp = await client.get('/products?department=Tools');
     expect(negResp.body.products).toHaveLength(0);
   });
@@ -54,7 +53,6 @@ describe('GET /products', function () {
   test('Search min_price funtionality works', async function () {
     const posResp = await client.get('/products?min_price=9');
     expect(posResp.body.products).toHaveLength(1);
-
     const negResp = await client.get('/products?min_price=11');
     expect(negResp.body.products).toHaveLength(0);
   });
@@ -62,7 +60,6 @@ describe('GET /products', function () {
   test('Search max_price funtionality works', async function () {
     const posResp = await client.get('/products?max_price=11');
     expect(posResp.body.products).toHaveLength(1);
-
     const negResp = await client.get('/products?max_price=9');
     expect(negResp.body.products).toHaveLength(0);
   });
@@ -75,16 +72,72 @@ describe('GET /products', function () {
       price: 5.0,
       net_weight: 1.2,
     });
-    // Applesauce should be first
+    // Applesauce should be first in alphabetical order
     const alphaResp = await client.get(
       '/products?order_by=name&order_by_sort=asc'
     );
     expect(alphaResp.body.products[0].name).toEqual('Applesauce');
-    // TeeVee should be first
-    const revResp = await client.get(
+    // TeeVee should be first reverse sort
+    const reveseResp = await client.get(
       '/products?order_by=name&order_by_sort=desc'
     );
-    expect(revResp.body.products[0].name).toEqual('TeeVee');
+    expect(reveseResp.body.products[0].name).toEqual('TeeVee');
+  });
+
+  test('Search newProducts category funtionality works', async () => {
+    // get products with discounts
+    const resp = await client.get('/products?category=newProducts');
+    expect(resp.statusCode).toBe(200);
+    expect(resp.body.products.length).toBe(1);
+  });
+
+  test('Search deals category funtionality works', async () => {
+    // add discount products to database (none yet)
+    // add discount product 1
+    await client.post('/products').send({
+      _token: TEST_DATA.testUserToken,
+      name: 'Applesauce',
+      description: 'food',
+      price: 5.0,
+      net_weight: 1.2,
+      discount: 0.25,
+    });
+    // add discount product 2
+    await client.post('/products').send({
+      _token: TEST_DATA.testUserToken,
+      name: 'Muffin',
+      description: 'food',
+      price: 5.0,
+      net_weight: 1.2,
+      discount: 0.5,
+    });
+    // get products with discounts
+    const resp = await client.get('/products?category=deals');
+    expect(resp.statusCode).toBe(200);
+    expect(resp.body.products.length).toBe(2);
+    // expect bigger discount to be first
+    expect(resp.body.products[0].name).toBe('Muffin');
+    expect(resp.body.products[1].name).toBe('Applesauce');
+
+    // order products by name A-Z
+    const resp2 = await client.get(
+      '/products?category=deals&order_by=name&order_by_sort=asc'
+    );
+    expect(resp2.statusCode).toBe(200);
+    expect(resp2.body.products.length).toBe(2);
+    // expect A to come before M
+    expect(resp2.body.products[0].name).toBe('Applesauce');
+    expect(resp2.body.products[1].name).toBe('Muffin');
+
+    // order products by name Z-A
+    const resp3 = await client.get(
+      '/products?category=deals&order_by=name&order_by_sort=desc'
+    );
+    expect(resp3.statusCode).toBe(200);
+    expect(resp3.body.products.length).toBe(2);
+    // expect M to come before A
+    expect(resp3.body.products[0].name).toBe('Muffin');
+    expect(resp3.body.products[1].name).toBe('Applesauce');
   });
 });
 
@@ -113,12 +166,15 @@ describe('POST /products', function () {
       price: 123.09,
       _token: TEST_DATA.testUserToken,
       net_weight: 1.2,
+      discount: 0.15,
     });
     expect(response.statusCode).toBe(201);
     expect(response.body.product).toHaveProperty('name');
     expect(response.body.product.name).toEqual('Umbrella');
     expect(response.body.product).toHaveProperty('date_added');
     expect(typeof response.body.product.date_added).toBe('string');
+    debugger;
+    expect(response.body.product.discount).toBe('0.15');
   });
 
   test('Prevents creating a product with duplicate name', async function () {
@@ -247,5 +303,65 @@ describe('DELETE /products/:id', function () {
       _token: TEST_DATA.testUserToken,
     });
     expect(response.statusCode).toBe(404);
+  });
+});
+
+describe('getCategoryIDs method', () => {
+  test('should return discount ids and id string when category is "deals"', async () => {
+    // add discount products to database (none yet)
+    // add discount product 1
+    const dealResp = await client.post('/products').send({
+      _token: TEST_DATA.testUserToken,
+      name: 'Applesauce',
+      description: 'food',
+      price: 5.0,
+      net_weight: 1.2,
+      discount: 0.25,
+    });
+    // add discount product 2
+    const dealResp2 = await client.post('/products').send({
+      _token: TEST_DATA.testUserToken,
+      name: 'Muffin',
+      description: 'food',
+      price: 5.0,
+      net_weight: 1.2,
+      discount: 0.5,
+    });
+
+    const { ids, escapedIDString } = await Product.getCategoryIDs('deals');
+
+    expect(ids.length).toBe(2);
+    expect(ids[0]).toBe(dealResp.body.product.product_id);
+    expect(ids[1]).toBe(dealResp2.body.product.product_id);
+    expect(escapedIDString).toBe('$1, $2');
+  });
+
+  test('should return new ids and id string when category is "newProducts"', async () => {
+    // hard to test well as date added is the same for all test products
+    // get new products
+    const resp = await Product.getCategoryIDs('newProducts');
+    expect(resp.ids.length).toBe(1);
+    expect(resp.escapedIDString).toBe('$1');
+
+    // add new product
+    await client.post('/products').send({
+      _token: TEST_DATA.testUserToken,
+      name: 'Applesauce',
+      description: 'food',
+      price: 5.0,
+      net_weight: 1.2,
+    });
+
+    const resp2 = await Product.getCategoryIDs('newProducts');
+    expect(resp2.ids.length).toBe(2);
+    expect(resp2.escapedIDString).toBe('$1, $2');
+  });
+
+  test('should return empty array and empty string when nothing to find', async () => {
+    // no discount products added
+    // default category selection is deals when argument omitted.
+    const resp = await Product.getCategoryIDs();
+    expect(resp.ids.length).toBe(0);
+    expect(resp.escapedIDString).toBe('');
   });
 });

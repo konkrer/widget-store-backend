@@ -24,7 +24,7 @@ class Product {
     // get product_id's for that category group. All other selections below
     // will be from within this category group.
     if (data.category) {
-      const { ids, escapedIDString } = await this.getCategoryIds(data.category);
+      const { ids, escapedIDString } = await this.getCategoryIDs(data.category);
       queryValues.push(...ids);
       whereExpressions.push(`product_id in ( ${escapedIDString} )`);
 
@@ -77,14 +77,8 @@ class Product {
     let finalQuery =
       baseQuery + whereExpressions.join(' AND ') + orderBy + limit;
 
-    try {
-      const productsRes = await db.query(finalQuery, queryValues);
-      return productsRes.rows;
-    } catch (error) {
-      console.log(finalQuery);
-      console.log(queryValues[0]);
-      return [];
-    }
+    const productsRes = await db.query(finalQuery, queryValues);
+    return productsRes.rows;
   }
 
   /** findOne()
@@ -129,21 +123,24 @@ class Product {
       dupError.status = 409;
       throw dupError;
     }
-
     const result = await db.query(
-      `INSERT INTO products (name, description, image_url, price, quantity, distributor, sku, net_weight) 
-             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) 
-             RETURNING product_id, name, description, image_url, price,
-               quantity, distributor, sku, date_added`,
+      `INSERT INTO products (name, byline, description, image_url, price, discount,
+        quantity, department, distributor, sku, net_weight, is_active) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) 
+      RETURNING *`,
       [
         data.name,
+        data.byline || null,
         data.description,
-        data.image_url,
+        data.image_url || null,
         data.price,
-        data.quantity,
-        data.distributor,
-        data.sku,
+        data.discount || 0.0,
+        data.quantity || 0,
+        data.department || 'All Departments',
+        data.distributor || null,
+        data.sku || null,
         data.net_weight,
+        data.is_active || true,
       ]
     );
 
@@ -201,7 +198,7 @@ class Product {
     }
   }
 
-  /** getCategoryIds()
+  /** getCategoryIDs()
    *
    * @param {string} category
    *
@@ -212,7 +209,7 @@ class Product {
    * escape character string (e.g. "$1, $2, <...>")
    *
    */
-  static async getCategoryIds(category) {
+  static async getCategoryIDs(category) {
     let sqlStatement;
 
     switch (category) {
