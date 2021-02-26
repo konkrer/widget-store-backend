@@ -1,5 +1,5 @@
 const db = require('../db');
-const sqlForPartialUpdate = require('../utils/partialUpdate');
+const sqlForPatchUpdate = require('../utils/sqlForPatchUpdate');
 
 /** Database methods object for products. */
 
@@ -88,7 +88,8 @@ class Product {
 
   static async findOne(product_id) {
     const productRes = await db.query(
-      `SELECT product_id, name, byline, description, image_url, price, discount, date_added, quantity, rating 
+      `SELECT product_id, name, byline, description, image_url, price, 
+        discount, date_added, quantity, rating 
        FROM products 
        WHERE product_id = $1`,
       [product_id]
@@ -100,7 +101,7 @@ class Product {
       const error = new Error(
         `There exists no product with id: '${product_id}'`
       );
-      error.status = 404; // 404 NOT FOUND
+      error.status = 404;
       throw error;
     }
 
@@ -155,7 +156,7 @@ class Product {
    */
 
   static async update(product_id, data) {
-    let { query, values } = sqlForPartialUpdate(
+    let { query, values } = sqlForPatchUpdate(
       'products',
       data,
       'product_id',

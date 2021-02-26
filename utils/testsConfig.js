@@ -21,12 +21,12 @@ async function beforeAllHook() {
   }
 }
 
-/**
- * Hook to insert a user, distributor, product, and order, and to authenticate
- *  the user for respective tokens that are stored
- *  in the input `testData` parameter.
+/** addTestDataHook()
  *
- * @param {Object} TEST_DATA - build the TEST_DATA object
+ * Hook to insert test data in the db and set relevant values in the TEST_DATA
+ * object to be used in tests. (i.e. - store testuser name, token, password, etc.)
+ *
+ * @param {Object} TEST_DATA - object to hold data for easy access in tests
  */
 
 async function addTestDataHook(TEST_DATA) {

@@ -1,7 +1,7 @@
 const db = require('../db');
 const braintreeGateway = require('../braintreeGateway');
-const sqlForPartialUpdate = require('../utils/partialUpdate');
-const { verifyOrderDataValid } = require('../utils/verifyOrderDataValid');
+const sqlForPatchUpdate = require('../utils/sqlForPatchUpdate');
+const verifyOrderDataValid = require('../utils/verifyOrderDataValid');
 
 /** Database methods object for orders. */
 
@@ -171,7 +171,7 @@ class Order {
    */
 
   static async update(order_id, data) {
-    let { query, values } = sqlForPartialUpdate(
+    let { query, values } = sqlForPatchUpdate(
       'orders',
       data,
       'order_id',

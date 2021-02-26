@@ -1,5 +1,5 @@
 const db = require('../db');
-const sqlForPartialUpdate = require('../utils/partialUpdate');
+const sqlForPatchUpdate = require('../utils/sqlForPatchUpdate');
 
 DEFAULT_LOGO =
   'https://www.af-affinity.co.uk/wp-content/uploads/2015/09/business-icon-reversed.png';
@@ -98,7 +98,7 @@ class Distributor {
    */
 
   static async update(id, data) {
-    let { query, values } = sqlForPartialUpdate(
+    let { query, values } = sqlForPatchUpdate(
       'distributors',
       data,
       'distributor_id',

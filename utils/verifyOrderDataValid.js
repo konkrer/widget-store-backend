@@ -68,4 +68,4 @@ function assert(condition, message) {
   }
 }
 
-module.exports = { verifyOrderDataValid };
+module.exports = verifyOrderDataValid;

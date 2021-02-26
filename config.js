@@ -18,7 +18,7 @@ const BRAINTREE_PUBLIC_KEY = process.env.BRAINTREE_PUBLIC_KEY;
 /**
  * Array of table names that have an is_active column to
  * allow "soft delete" of rows in these tables.
- * Used by partialUpdate so rows behave as if deleted.
+ * Used by sqlForPatchUpdate so rows behave as if deleted.
  */
 const IS_ACTIVE_TABLES = ['users', 'products'];
 

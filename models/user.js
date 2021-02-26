@@ -1,6 +1,6 @@
 const db = require('../db');
 const bcrypt = require('bcrypt');
-const partialUpdate = require('../utils/partialUpdate');
+const sqlForPatchUpdate = require('../utils/sqlForPatchUpdate');
 
 const { BCRYPT_WORK_FACTOR } = require('../config');
 
@@ -152,7 +152,12 @@ class User {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
-    let { query, values } = partialUpdate('users', data, 'username', username);
+    let { query, values } = sqlForPatchUpdate(
+      'users',
+      data,
+      'username',
+      username
+    );
     const result = await db.query(query, values);
     const user = result.rows[0];
 
