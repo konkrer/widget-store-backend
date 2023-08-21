@@ -31,9 +31,9 @@ const IS_ACTIVE_TABLES = ['users', 'products'];
 let DB_URI;
 
 if (process.env.NODE_ENV === 'test') {
-  DB_URI = 'widget-store-test';
+  DB_URI = process.env.DATABASE_URL_TEST;
 } else {
-  DB_URI = process.env.DATABASE_URL || 'widget-store';
+  DB_URI = process.env.DATABASE_URL;
 }
 
 console.log('Using database', DB_URI);
