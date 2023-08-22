@@ -6,16 +6,20 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 
-app.use(express.json());
-app.use(cors());
-app.use(helmet());
-app.use(morgan('tiny'));
-
 const usersRoutes = require('./routes/users');
 const distibutorRoutes = require('./routes/distributors');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
+
+const corsOptions = {
+  origin: process.env.ORIGIN_IP,
+};
+
+app.use(express.json());
+app.use(cors(corsOptions));
+app.use(helmet());
+app.use(morgan('tiny'));
 
 app.use('/users', usersRoutes);
 app.use('/distributors', distibutorRoutes);

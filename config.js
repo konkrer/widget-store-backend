@@ -22,14 +22,7 @@ const BRAINTREE_PUBLIC_KEY = process.env.BRAINTREE_PUBLIC_KEY;
  */
 const IS_ACTIVE_TABLES = ['users', 'products'];
 
-// database is:
-//
-// - on Heroku, get from env var DATABASE_URL
-// - in testing, 'widget-store-test'
-// - else: 'widget-store'
-
 let DB_URI;
-
 if (process.env.NODE_ENV === 'test') {
   DB_URI = process.env.DATABASE_URL_TEST;
 } else {
