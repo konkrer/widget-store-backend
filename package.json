@@ -1,6 +1,6 @@
 {
   "name": "widget_backend",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "backend API for widgit_store",
   "main": "server.js",
   "scripts": {
@@ -24,7 +24,7 @@
     "express": "^4.17.1",
     "helmet": "^4.3.1",
     "jsonschema": "^1.4.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.1",
     "morgan": "^1.10.0",
     "pg": "^8.5.1"
   },
@@ -38,6 +38,9 @@
       "<rootDir>/node_modules/",
       "<rootDir>/utils/testsConfig.js",
       "<rootDir>/config.js"
+    ],
+    "setupFiles": [
+      "<rootDir>/jestConfig.js"
     ]
   }
 }

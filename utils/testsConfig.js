@@ -1,8 +1,8 @@
 /** Configuration file for intergrations tests. */
 
 // npm packages
-const request = require('supertest');
-const jwt = require('jsonwebtoken');
+// const request = require('supertest');
+// const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
 // app imports
