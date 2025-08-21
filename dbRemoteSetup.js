@@ -55,6 +55,9 @@ async function addFakeProducts() {
       );
     } catch (error) {
       console.log(error);
+      if (error.code=='23505') {  // repeated fake name
+        i -= 1;
+      }
     }
   }
 

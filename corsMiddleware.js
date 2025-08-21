@@ -18,8 +18,8 @@ const corsMiddleware = (req, res, next) => {
 // // 3. Method Not Allowed
 //  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
 
-// // 4. No ‘Access-Control-Allow-Headers’ Header
-//  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+// 4. No ‘Access-Control-Allow-Headers’ Header
+ res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
 // // 5. Preflight Request Handling (OPTIONS request)
 //  if (req.method === "OPTIONS") {
