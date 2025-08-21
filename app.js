@@ -11,13 +11,14 @@ const distibutorRoutes = require('./routes/distributors');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const authRoutes = require('./routes/auth');
+const corsMiddleware = require('./corsMiddleware')
 
-const corsOptions = {
-  origin: process.env.ORIGIN_IP,
-};
+// const corsOptions = {
+//   origin: process.env.ORIGIN_IP,
+// };
 
 app.use(express.json());
-app.use(cors(corsOptions));
+app.use(corsMiddleware.corsMiddleware);
 app.use(helmet());
 app.use(morgan('tiny'));
 
