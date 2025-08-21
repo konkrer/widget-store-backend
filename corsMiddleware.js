@@ -1,7 +1,7 @@
 const corsMiddleware = (req, res, next) => {
  const allowedOrigin =
    process.env.NODE_ENV === 'production'
-     ? process.env.ORIGIN_IP_PRODUTION
+     ? process.env.ORIGIN_IP_PRODUCTION
      : process.env.ORIGIN_IP_DEV;
  const origin = req.headers.origin;
 
